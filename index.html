@@ -1859,6 +1859,7 @@ function processScan(){
     }
   })
   .catch(function(err){
+    console.log(err);
     if(loading)loading.style.display='none';
     if(btn)btn.style.display='block';
     // Demo mode daca nu e API key
@@ -2204,10 +2205,7 @@ function analyzePhoto(){
     var itemsEl=document.getElementById('cam-items-list');
     var cr2=document.getElementById('cam-result');
     if(itemsEl&&cr2){
-      itemsEl.innerHTML='<div style="font-size:0.75rem;color:var(--amber);line-height:1.6;padding:0.5rem 0;">'
-        +(COUNTRY==='ro'
-          ?'Pentru a scana bonuri reale, aplicatia trebuie publicata pe un server (nu ca fisier HTML local).<br><br>Ca sa publici gratuit: incarca fisierul pe <strong>netlify.com</strong> sau <strong>github.io</strong> si deschide linkul de acolo.'
-          :'To scan real receipts, the app must be hosted on a server (not opened as local HTML file).<br><br>To host free: upload to <strong>netlify.com</strong> or <strong>github.io</strong> and open from there.')
+    itemsEl.innerHTML = "Nu s-a putut analiza bonul. Incearca o poza mai clara.";
         +'</div>';
       cr2.style.display='block';
       // Ascunde butonul de adaugare
