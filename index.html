@@ -1,0 +1,3172 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Veltrix Mind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — black & gray, no purple
+   ============================================================ */
+:root{
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+
+  /* Surfaces — pure black to mid-gray */
+  --s0: #000000;
+  --s1: #0a0a0a;
+  --s2: #131313;
+  --s3: #1a1a1a;
+  --s4: #232323;
+  --s5: #2a2a2a;
+
+  /* Text — white to gray */
+  --t1: #ffffff;
+  --t2: #e5e5e5;
+  --t3: #a3a3a3;
+  --t4: #737373;
+  --t5: #525252;
+
+  /* Borders */
+  --b1: rgba(255,255,255,0.06);
+  --b2: rgba(255,255,255,0.10);
+  --b3: rgba(255,255,255,0.16);
+
+  /* Accents — subtle white/gray + functional colors */
+  --acc: #ffffff;
+  --acc-dim: rgba(255,255,255,0.10);
+  --acc-glow: rgba(255,255,255,0.18);
+
+  /* Functional only */
+  --green: #34d399;
+  --green-dim: rgba(52,211,153,0.12);
+  --green-bd: rgba(52,211,153,0.32);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --red-bd: rgba(248,113,113,0.32);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.12);
+  --blue-bd: rgba(96,165,250,0.32);
+
+  /* Radii */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-2xl: 24px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --sh-1: 0 1px 2px rgba(0,0,0,0.3);
+  --sh-2: 0 4px 12px rgba(0,0,0,0.4);
+  --sh-3: 0 10px 30px rgba(0,0,0,0.5);
+  --sh-glow: 0 8px 24px rgba(255,255,255,0.10);
+
+  /* Motion */
+  --ease: cubic-bezier(0.4,0,0.2,1);
+  --spring: cubic-bezier(0.34,1.56,0.64,1);
+
+  /* Fonts */
+  --font: 'Inter','SF Pro Text',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --mono: 'JetBrains Mono','SF Mono',ui-monospace,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--s0);}
+body{
+  font-family:var(--font);
+  color:var(--t1);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  letter-spacing:-0.005em;
+  overscroll-behavior:none;
+  background:var(--s0);
+}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
+
+button,input,select,textarea{
+  font-family:inherit;font-size:inherit;color:inherit;
+  background:transparent;border:none;outline:none;
+}
+button{cursor:pointer;}
+input::placeholder{color:var(--t5);}
+::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}
+
+/* ============================================================
+   SHELL
+   ============================================================ */
+.shell{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  max-width:430px;margin:0 auto;
+  background:var(--s0);
+  overflow:hidden;
+}
+.shell-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+
+/* Screens */
+.sc{display:none;min-height:100%;}
+.sc.act{display:block;animation:scFade 0.4s var(--ease);}
+.sc.act#sc-welcome{display:flex;flex-direction:column;}
+.sc.act#sc-setup{display:flex;flex-direction:column;}
+.sc.act#sc-grafic{display:block;}
+@keyframes scFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* ============================================================
+   TABBAR
+   ============================================================ */
+.tabbar{
+  flex:none;
+  display:flex;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-top:1px solid var(--b1);
+  padding:8px 8px calc(var(--safe-b) + 8px);
+}
+/* When onboarding, completely hide the tab bar */
+body.onboarding .tabbar{display:none !important;}
+body.onboarding{background:var(--s0);}
+.tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:8px 4px;
+  color:var(--t4);
+  border-radius:var(--r-md);
+  transition:color 0.2s var(--ease);
+}
+.tab.act{color:var(--t1);}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.tab-l{font-size:10px;font-weight:600;letter-spacing:-0.01em;}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:16px 22px;
+  border-radius:var(--r-pill);
+  font-size:15px;font-weight:600;
+  letter-spacing:-0.01em;
+  transition:all 0.2s var(--spring);
+  white-space:nowrap;
+}
+.btn:active{transform:scale(0.97);}
+.btn-acc{background:var(--t1);color:var(--s0);}
+.btn-acc:active{background:var(--t2);}
+.btn-ghost{background:var(--s3);color:var(--t1);border:1px solid var(--b1);}
+.btn-ghost:active{background:var(--s4);}
+.btn-block{width:100%;padding:18px;font-size:16px;font-weight:700;}
+
+/* ============================================================
+   INPUTS
+   ============================================================ */
+.inp{
+  width:100%;padding:16px 18px;
+  background:var(--s2);
+  border:1px solid var(--b1);
+  border-radius:var(--r-md);
+  color:var(--t1);font-size:15px;
+  letter-spacing:-0.01em;
+  transition:border-color 0.2s var(--ease);
+}
+.inp:focus{border-color:var(--b3);background:var(--s3);}
+.inp-big{
+  font-size:36px;font-weight:700;padding:22px 20px;
+  text-align:center;font-family:var(--mono);
+  font-variant-numeric:tabular-nums;letter-spacing:-0.03em;
+}
+
+/* ============================================================
+   ICON BUTTON
+   ============================================================ */
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--s3);border:1px solid var(--b1);
+  color:var(--t2);
+  transition:transform 0.2s var(--spring);
+}
+.icon-btn:active{transform:scale(0.9);}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.icon-btn .lang-txt{font-size:11px;font-weight:700;letter-spacing:0.04em;}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.sec{padding:18px 20px 10px;}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sec-t{font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--t4);}
+.sec-a{font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;}
+.sec-a:active{color:var(--t1);}
+
+/* ============================================================
+   PAGE HEADER (top of pages)
+   ============================================================ */
+.page-h{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(var(--safe-t) + 14px) 20px 14px;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-bottom:1px solid var(--b1);
+}
+.page-h-l{flex:1;min-width:0;}
+.page-h-r{display:flex;gap:8px;}
+.page-title{font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-0.015em;}
+.page-greet{font-size:11px;color:var(--t5);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:2px;}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-host{
+  position:fixed;left:0;right:0;
+  bottom:calc(var(--safe-b) + 86px);
+  display:flex;flex-direction:column;align-items:center;
+  gap:8px;pointer-events:none;z-index:1000;padding:0 20px;
+}
+.toast{
+  pointer-events:auto;
+  padding:13px 20px;
+  background:var(--t1);
+  color:var(--s0);
+  border-radius:var(--r-pill);
+  font-size:13px;font-weight:600;
+  box-shadow:var(--sh-3);
+  animation:tIn 0.32s var(--spring);
+  max-width:90%;
+  text-align:center;
+}
+.toast.out{animation:tOut 0.3s var(--ease) forwards;}
+@keyframes tIn{from{opacity:0;transform:translateY(20px) scale(0.85);}to{opacity:1;transform:none;}}
+@keyframes tOut{to{opacity:0;transform:translateY(20px) scale(0.85);}}
+
+/* ============================================================
+   MODAL / SHEET
+   ============================================================ */
+.modal{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:none;align-items:flex-end;justify-content:center;
+  animation:mdFade 0.3s var(--ease);
+}
+.modal.open{display:flex;}
+@keyframes mdFade{from{opacity:0;}to{opacity:1;}}
+.sheet{
+  width:100%;max-width:430px;
+  background:var(--s1);
+  border:1px solid var(--b1);
+  border-radius:24px 24px 0 0;
+  padding:20px 22px calc(var(--safe-b) + 22px);
+  animation:shUp 0.36s var(--spring);
+  max-height:88vh;overflow-y:auto;
+}
+@keyframes shUp{from{transform:translateY(100%);}to{transform:none;}}
+.sheet-handle{
+  width:38px;height:4px;border-radius:2px;
+  background:var(--t5);margin:0 auto 18px;
+}
+.sheet-actions{
+  display:flex;gap:10px;margin-top:18px;
+}
+.sheet-actions .btn{flex:1;}
+
+/* ============================================================
+   LANG MODAL
+   ============================================================ */
+.lang-list{display:flex;flex-direction:column;gap:6px;}
+.lang-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border-radius:var(--r-md);
+  background:var(--s2);border:1px solid var(--b1);
+  transition:background 0.2s var(--ease);
+}
+.lang-item:active{background:var(--s3);}
+.lang-item.sel{background:var(--s3);border-color:var(--b3);}
+.lang-code{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--s4);
+  font-size:12px;font-weight:800;letter-spacing:0.04em;
+  color:var(--t1);
+  display:flex;align-items:center;justify-content:center;
+}
+.lang-mid{flex:1;}
+.lang-n{font-size:15px;font-weight:600;color:var(--t1);}
+.lang-cur{font-size:12px;color:var(--t4);margin-top:2px;}
+</style>
+<style>
+/* ============================================================
+   WELCOME
+   ============================================================ */
+#sc-welcome{
+  flex-direction:column;
+  padding:calc(var(--safe-t) + 40px) 26px calc(var(--safe-b) + 32px);
+  background:var(--s0);
+  position:relative;
+  min-height:100%;
+}
+#sc-welcome::before{
+  content:'';position:absolute;
+  top:-100px;right:-100px;width:300px;height:300px;
+  background:radial-gradient(circle,rgba(255,255,255,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.wl-mark{display:flex;align-items:center;gap:10px;margin-bottom:36px;position:relative;}
+.wl-mark-dot{
+  width:36px;height:36px;border-radius:11px;
+  background:var(--s3);border:1px solid var(--b2);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:var(--t1);font-size:18px;letter-spacing:-0.04em;
+}
+.wl-mark-n{font-size:15px;font-weight:700;letter-spacing:-0.01em;color:var(--t1);}
+.wl-title{font-size:54px;font-weight:900;line-height:1.0;letter-spacing:-0.035em;color:var(--t1);position:relative;}
+.wl-title em{font-style:normal;color:var(--t3);}
+.wl-stat{margin:32px 0;padding:20px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-lg);position:relative;}
+.wl-stat-n{font-family:var(--mono);font-size:38px;font-weight:800;color:var(--t1);letter-spacing:-0.02em;line-height:1;}
+.wl-stat-l{font-size:12px;color:var(--t3);margin-top:6px;line-height:1.4;}
+.wl-body{font-size:15px;color:var(--t3);line-height:1.55;margin-top:18px;position:relative;}
+.wl-body strong{color:var(--t1);font-weight:600;}
+
+/* ============================================================
+   SETUP — 3 smooth pages
+   ============================================================ */
+#sc-setup{
+  flex-direction:column;
+  padding:calc(var(--safe-t) + 22px) 26px calc(var(--safe-b) + 24px);
+  background:var(--s0);
+  min-height:100%;
+}
+.setup-bar{display:flex;align-items:center;gap:6px;margin-bottom:36px;}
+.setup-dot{flex:1;height:3px;border-radius:2px;background:var(--s4);transition:background 0.5s var(--ease);}
+.setup-dot.act{background:var(--t1);}
+.setup-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:14px;color:var(--t4);margin-bottom:24px;cursor:pointer;
+}
+.setup-back:active{color:var(--t2);}
+.setup-back svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.setup-step{display:none;animation:setupSlideIn 0.5s var(--ease) both;}
+.setup-step.act{display:block;}
+.setup-step.exiting{animation:setupSlideOut 0.35s var(--ease) both;}
+@keyframes setupSlideIn{from{opacity:0;transform:translateX(36px);}to{opacity:1;transform:none;}}
+@keyframes setupSlideOut{from{opacity:1;transform:none;}to{opacity:0;transform:translateX(-36px);}}
+.setup-q{font-size:36px;font-weight:800;line-height:1.1;letter-spacing:-0.03em;color:var(--t1);}
+.setup-q em{font-style:normal;color:var(--t3);}
+.setup-hint{font-size:14px;color:var(--t4);margin-top:10px;line-height:1.5;}
+.setup-field{margin:42px 0 24px;}
+.setup-quick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px;}
+.setup-chip{padding:14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);color:var(--t2);font-weight:600;font-size:14px;font-family:var(--mono);font-variant-numeric:tabular-nums;transition:all 0.25s var(--spring);text-align:center;}
+.setup-chip:active{background:var(--s3);transform:scale(0.97);}
+.setup-chip.sel{background:var(--s4);border-color:var(--b3);color:var(--t1);}
+.setup-spacer{flex:1;}
+.setup-btn-wrap{padding-top:20px;}
+
+/* ============================================================
+   HOME — v16 style: big circle days + summary cards + slider
+   ============================================================ */
+#sc-home{padding-bottom:60px;background:var(--s0);}
+
+/* Top header bar */
+.h-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(var(--safe-t) + 16px) 22px 8px;
+}
+.h-bar-l{display:flex;align-items:center;gap:8px;color:var(--t3);font-size:13px;font-weight:600;}
+.h-bar-l:active{color:var(--t1);}
+.h-bar-l svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.h-bar-r{display:flex;align-items:center;gap:8px;}
+
+/* Patriot/XP top bar */
+.h-patriot{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 22px 18px;
+}
+.h-patriot-l{font-size:10px;font-weight:800;letter-spacing:0.16em;color:var(--t5);text-transform:uppercase;}
+.h-patriot-bar{flex:1;height:3px;border-radius:2px;background:var(--s3);overflow:hidden;}
+.h-patriot-bar-f{height:100%;background:var(--t1);width:0%;transition:width 0.8s var(--spring);}
+.h-patriot-v{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--t1);letter-spacing:-0.01em;}
+
+/* Big circle countdown */
+.hh-circle-wrap{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px 20px 14px;
+  position:relative;
+}
+.hh-circle{
+  width:280px;height:280px;
+  border-radius:50%;
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at center,var(--s2) 0%,var(--s1) 60%,var(--s0) 100%);
+  box-shadow:
+    inset 0 0 0 1px var(--b1),
+    inset 0 0 60px rgba(255,255,255,0.02),
+    0 0 80px rgba(0,0,0,0.6);
+}
+.hh-circle::before{
+  content:'';position:absolute;inset:14px;border-radius:50%;
+  border:1px solid var(--b1);
+  pointer-events:none;
+}
+.hh-circle-n{
+  font-family:var(--mono);font-size:96px;font-weight:800;
+  color:var(--t1);letter-spacing:-0.05em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.hh-circle-u{
+  font-size:11px;font-weight:800;letter-spacing:0.22em;
+  color:var(--t4);margin-top:10px;text-transform:uppercase;
+}
+.hh-sub{
+  margin-top:18px;font-size:14px;color:var(--t3);
+  text-align:center;letter-spacing:-0.005em;
+}
+.hh-sub b{color:var(--t1);font-weight:700;font-family:var(--mono);font-variant-numeric:tabular-nums;}
+
+/* SUMMARY CARDS — like v16 */
+.sum-card{
+  margin:16px 20px 0;
+  padding:20px 22px;
+  background:var(--s2);
+  border:1px solid var(--b1);
+  border-radius:var(--r-2xl);
+  position:relative;
+}
+.sum-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;
+}
+.sum-row + .sum-row{border-top:1px solid var(--b1);}
+.sum-l{font-size:14px;color:var(--t3);font-weight:500;}
+.sum-v{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.015em;}
+.sum-v.red{color:var(--red);}
+.sum-v.green{color:var(--green);}
+.sum-v.blue{color:var(--blue);}
+.sum-card-line{
+  height:1px;background:var(--b1);margin:8px 0;
+}
+
+/* Countdown card */
+.cd-card{
+  margin:12px 20px 0;
+  padding:18px 22px;
+  background:var(--s2);
+  border:1px solid var(--b1);
+  border-radius:var(--r-2xl);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cd-l{font-size:13px;color:var(--t3);}
+.cd-v{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.015em;}
+
+/* SAVINGS SLIDER card */
+.sv-card{
+  margin:12px 20px 0;
+  padding:22px;
+  background:var(--s2);
+  border:1px solid var(--b1);
+  border-radius:var(--r-2xl);
+}
+.sv-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.sv-title{font-size:14px;color:var(--t3);font-weight:500;}
+.sv-pct{font-family:var(--mono);font-size:24px;font-weight:800;color:var(--t1);letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
+.sv-slider-wrap{
+  position:relative;height:36px;display:flex;align-items:center;
+}
+.sv-track{
+  position:absolute;left:0;right:0;height:4px;
+  background:var(--s4);border-radius:2px;
+}
+.sv-fill{
+  position:absolute;left:0;height:4px;
+  background:var(--t1);border-radius:2px;
+  transition:width 0.25s var(--ease);
+}
+.sv-thumb{
+  position:absolute;width:22px;height:22px;border-radius:50%;
+  background:var(--t1);
+  box-shadow:0 2px 10px rgba(0,0,0,0.6),0 0 0 6px rgba(255,255,255,0.06);
+  transform:translateX(-50%);
+  transition:left 0.25s var(--ease),transform 0.15s var(--spring);
+  cursor:grab;
+  touch-action:none;
+}
+.sv-thumb:active{cursor:grabbing;transform:translateX(-50%) scale(1.15);}
+.sv-thumb::after{
+  content:'';position:absolute;inset:-14px;
+}
+.sv-foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+.sv-foot-l{font-size:12px;color:var(--t4);}
+.sv-foot-l b{color:var(--t1);font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:700;}
+
+/* Sumar section */
+.sm-sec{padding:24px 20px 0;}
+.sm-sec-t{font-size:10px;font-weight:800;letter-spacing:0.22em;color:var(--t5);text-transform:uppercase;padding:0 4px 10px;}
+
+</style>
+<style>
+/* ============================================================
+   SHOP/PRODUCTS — vertical list with rows (v16 style)
+   ============================================================ */
+#sc-shop{background:var(--s0);padding-bottom:60px;}
+
+/* Search bar */
+.sh-search{
+  margin:0 20px 14px;
+  position:relative;
+}
+.sh-search-inp{
+  width:100%;padding:14px 18px 14px 44px;
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-pill);
+  color:var(--t1);font-size:14px;
+}
+.sh-search-inp::placeholder{color:var(--t5);}
+.sh-search svg{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;color:var(--t4);
+  stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  pointer-events:none;
+}
+
+/* Category tabs */
+.sh-tabs{
+  display:flex;gap:6px;overflow-x:auto;padding:0 20px 4px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+}
+.sh-tab{
+  flex:none;padding:9px 16px;
+  background:transparent;border:1px solid var(--b1);
+  border-radius:var(--r-pill);
+  font-size:13px;font-weight:600;color:var(--t3);
+  scroll-snap-align:start;white-space:nowrap;
+  transition:all 0.2s var(--ease);
+}
+.sh-tab.act{background:var(--t1);border-color:var(--t1);color:var(--s0);}
+
+/* Section subtitle (Romanesti / Ne-romanesti) */
+.sh-grp{
+  font-size:10px;font-weight:800;letter-spacing:0.22em;
+  color:var(--t5);text-transform:uppercase;
+  padding:18px 24px 8px;
+}
+
+/* Product rows */
+.sh-list{padding:0 12px;}
+.sh-row{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 12px;
+  border-bottom:1px solid var(--b1);
+}
+.sh-row-mid{flex:1;min-width:0;}
+.sh-row-n{font-size:17px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;line-height:1.2;}
+.sh-row-meta{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.sh-row-pr{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t3);
+  font-variant-numeric:tabular-nums;
+}
+.sh-row-unit{font-size:12px;color:var(--t5);}
+.sh-row-tag{
+  font-size:9px;font-weight:800;letter-spacing:0.08em;
+  padding:2px 7px;border-radius:5px;
+}
+.sh-row-tag.ess{background:var(--green-dim);color:var(--green);border:1px solid var(--green-bd);}
+.sh-row-tag.lux{background:var(--red-dim);color:var(--red);border:1px solid var(--red-bd);}
+.sh-row-xp{
+  font-size:9px;font-weight:800;letter-spacing:0.06em;
+  padding:2px 7px;border-radius:5px;
+  background:var(--s4);color:var(--t1);
+  font-family:var(--mono);font-variant-numeric:tabular-nums;
+}
+
+/* +/- controls on row */
+.sh-row-ctrl{
+  display:flex;align-items:center;gap:6px;flex:none;
+}
+.sh-row-btn{
+  width:38px;height:38px;border-radius:var(--r-md);
+  background:var(--s2);border:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t2);font-size:18px;font-weight:400;line-height:1;
+  transition:all 0.15s var(--spring);
+}
+.sh-row-btn:active{background:var(--s4);transform:scale(0.92);}
+.sh-row-btn.plus{background:var(--s3);}
+.sh-row-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.sh-row-qty{
+  font-family:var(--mono);font-size:16px;font-weight:700;color:var(--t1);
+  min-width:24px;text-align:center;font-variant-numeric:tabular-nums;
+}
+
+/* ============================================================
+   CALENDAR (kept simple, black/gray)
+   ============================================================ */
+#sc-cal{background:var(--s0);padding-bottom:60px;}
+.cal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;
+}
+.cal-nav-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--s3);border:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t2);
+}
+.cal-nav-btn:active{transform:scale(0.9);}
+.cal-nav-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.cal-month-name{font-size:17px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.cal-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:4px;
+  padding:0 16px;
+}
+.cal-wd{
+  text-align:center;font-size:10px;font-weight:700;color:var(--t5);
+  letter-spacing:0.08em;text-transform:uppercase;padding:8px 0;
+}
+.cal-cell{
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:var(--r-md);
+  color:var(--t2);font-size:15px;font-weight:600;
+  position:relative;
+}
+.cal-cell.empty{visibility:hidden;}
+.cal-cell.today{background:var(--s3);border-color:var(--b2);color:var(--t1);}
+.cal-cell.sel{background:var(--t1);color:var(--s0);}
+.cal-cell:active{transform:scale(0.92);}
+.cal-dot{
+  position:absolute;bottom:6px;width:4px;height:4px;border-radius:50%;
+  background:var(--t1);
+}
+.cal-cell.sel .cal-dot{background:var(--s0);}
+.cal-detail{padding:16px 20px;}
+
+/* ============================================================
+   ABO / PLĂȚI
+   ============================================================ */
+#sc-abo{background:var(--s0);padding-bottom:60px;}
+.abo-totals{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  padding:0 20px 18px;
+}
+.abo-tot{
+  padding:14px 12px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-md);text-align:center;
+}
+.abo-tot-l{font-size:9px;font-weight:800;letter-spacing:0.12em;color:var(--t5);text-transform:uppercase;}
+.abo-tot-v{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--t1);margin-top:6px;font-variant-numeric:tabular-nums;}
+.abo-tot.rem .abo-tot-v{color:var(--red);}
+.abo-tot.paid .abo-tot-v{color:var(--green);}
+
+.abo-grp-h{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 22px 8px;
+}
+.abo-grp-t{font-size:10px;font-weight:800;letter-spacing:0.22em;color:var(--t5);text-transform:uppercase;}
+.abo-grp-c{font-size:11px;color:var(--t4);font-family:var(--mono);font-variant-numeric:tabular-nums;}
+
+.abo-list{padding:0 12px;}
+.abo-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 12px;border-bottom:1px solid var(--b1);
+}
+.abo-ico{
+  width:40px;height:40px;border-radius:12px;
+  background:var(--s3);border:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t1);font-weight:800;font-size:14px;flex:none;
+}
+.abo-mid{flex:1;min-width:0;}
+.abo-n{font-size:15px;font-weight:600;color:var(--t1);}
+.abo-t{font-size:11px;color:var(--t4);margin-top:2px;}
+.abo-pr{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;margin-right:8px;}
+.abo-chk{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--s3);border:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t4);
+}
+.abo-chk svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+.abo-item.paid .abo-chk{background:var(--green);border-color:var(--green);color:var(--s0);}
+.abo-item.paid .abo-n{color:var(--t4);text-decoration:line-through;}
+.abo-del{
+  width:28px;height:28px;border-radius:50%;
+  background:transparent;border:none;color:var(--t5);
+  font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;
+}
+.abo-del:active{color:var(--red);}
+
+.abo-add-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin:18px 20px;
+  padding:16px;background:var(--s2);border:1px dashed var(--b2);
+  border-radius:var(--r-md);
+  color:var(--t2);font-size:14px;font-weight:600;
+}
+.abo-add-btn:active{background:var(--s3);}
+.abo-add-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+
+.abo-presets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.abo-preset{
+  display:flex;align-items:center;gap:10px;
+  padding:12px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-md);
+  transition:background 0.2s var(--ease);
+}
+.abo-preset:active{background:var(--s3);}
+.ap-ico{width:28px;height:28px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--t1);font-weight:800;font-size:12px;flex:none;}
+.ap-mid{flex:1;min-width:0;text-align:left;}
+.ap-n{font-size:12px;font-weight:600;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ap-p{font-size:10px;color:var(--t4);font-family:var(--mono);font-variant-numeric:tabular-nums;}
+
+.abo-yr-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:14px 20px 0;
+}
+.abo-yr{
+  padding:14px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-md);
+}
+.abo-yr.wide{grid-column:span 2;}
+.abo-yr-l{font-size:10px;font-weight:800;letter-spacing:0.12em;color:var(--t5);text-transform:uppercase;}
+.abo-yr-v{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--t1);margin-top:6px;font-variant-numeric:tabular-nums;}
+
+/* ============================================================
+   JOCURI / QUIZ
+   ============================================================ */
+#sc-quiz{background:var(--s0);padding-bottom:60px;}
+.qz-stats{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding:0 20px 18px;
+}
+.qz-stat{padding:14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);text-align:center;}
+.qz-stat-v{font-family:var(--mono);font-size:24px;font-weight:800;color:var(--t1);letter-spacing:-0.02em;font-variant-numeric:tabular-nums;}
+.qz-stat-l{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--t5);text-transform:uppercase;margin-top:4px;}
+
+.qz-games{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px;}
+.qz-game{
+  padding:18px 16px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-xl);text-align:left;cursor:pointer;
+  transition:background 0.2s var(--ease);
+}
+.qz-game:active{background:var(--s3);transform:scale(0.97);}
+.qz-game-ico{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--s4);display:flex;align-items:center;justify-content:center;
+  color:var(--t1);font-weight:800;font-size:14px;margin-bottom:14px;
+}
+.qz-game-n{font-size:14px;font-weight:700;color:var(--t1);letter-spacing:-0.01em;}
+.qz-game-s{font-size:11px;color:var(--t4);margin-top:3px;}
+
+.qz-prize{
+  margin:18px 20px;padding:22px;
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-2xl);position:relative;overflow:hidden;
+}
+.qz-prize::before{
+  content:'';position:absolute;top:-50%;right:-30%;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(255,255,255,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.qz-prize-tag{font-size:10px;font-weight:800;letter-spacing:0.16em;color:var(--t5);text-transform:uppercase;}
+.qz-prize-t{font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-0.02em;line-height:1.15;margin-top:8px;position:relative;}
+.qz-prize-t em{font-style:normal;color:var(--t3);}
+.qz-prize-s{font-size:13px;color:var(--t3);margin-top:10px;line-height:1.5;position:relative;}
+.qz-prize-foot{font-size:11px;color:var(--t5);margin-top:12px;position:relative;}
+
+/* Leaderboard */
+.lb-list{padding:0 12px;display:flex;flex-direction:column;}
+.lb-row{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 12px;border-bottom:1px solid var(--b1);
+}
+.lb-row.you{background:var(--s2);border-radius:var(--r-md);border-bottom:none;margin:2px 0;}
+.lb-rank{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:13px;font-weight:800;
+  background:var(--s3);border:1px solid var(--b1);color:var(--t2);
+  flex:none;
+}
+.lb-rank.r1{background:var(--t1);color:var(--s0);}
+.lb-rank.r2{background:var(--s5);color:var(--t1);}
+.lb-rank.r3{background:var(--s4);color:var(--t1);}
+.lb-mid{flex:1;min-width:0;}
+.lb-n{font-size:14px;font-weight:600;color:var(--t1);}
+.lb-s{font-size:11px;color:var(--t4);margin-top:2px;}
+.lb-pts{text-align:right;flex:none;}
+.lb-pts-v{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;}
+.lb-pts-l{font-size:9px;color:var(--t5);letter-spacing:0.08em;text-transform:uppercase;font-weight:700;}
+
+/* Quiz modal body */
+.qz-modal-body{padding:8px 0;}
+.qz-prog{font-size:11px;font-weight:800;letter-spacing:0.12em;color:var(--t5);text-transform:uppercase;text-align:center;margin-bottom:14px;font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.qz-q{font-size:20px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;line-height:1.3;margin-bottom:18px;}
+.qz-opts{display:flex;flex-direction:column;gap:8px;}
+.qz-opts-2{grid-template-columns:1fr 1fr;display:grid;gap:8px;}
+.qz-opt{
+  padding:16px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-md);color:var(--t1);font-size:14px;font-weight:600;
+  text-align:left;transition:all 0.15s var(--ease);
+}
+.qz-opt:active{background:var(--s3);}
+.qz-opt.ok{background:var(--green-dim);border-color:var(--green-bd);color:var(--green);}
+.qz-opt.bad{background:var(--red-dim);border-color:var(--red-bd);color:var(--red);}
+.qz-prod{padding:18px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);text-align:center;margin-bottom:14px;}
+.qz-prod-ico{width:48px;height:48px;border-radius:14px;background:var(--s4);display:inline-flex;align-items:center;justify-content:center;color:var(--t1);font-weight:800;font-size:16px;margin-bottom:8px;}
+.qz-prod-n{font-size:15px;font-weight:700;color:var(--t1);}
+.qz-prod-s{font-size:11px;color:var(--t4);margin-top:2px;}
+.qz-brand{font-size:26px;font-weight:800;color:var(--t1);text-align:center;padding:14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);margin-bottom:14px;letter-spacing:-0.02em;}
+.qz-fin{text-align:center;padding:8px 0;}
+.qz-fin-score{font-family:var(--mono);font-size:48px;font-weight:800;color:var(--t1);letter-spacing:-0.03em;font-variant-numeric:tabular-nums;}
+.qz-fin-sub{font-size:12px;font-weight:700;letter-spacing:0.12em;color:var(--t5);text-transform:uppercase;margin-top:8px;}
+.qz-fin-xp{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--green);margin:14px 0 22px;font-variant-numeric:tabular-nums;}
+
+</style>
+<style>
+/* ============================================================
+   GRAFIC — full screen photo, water rises, no blocking overlays
+   ============================================================ */
+#sc-grafic{
+  position:relative;
+  padding:0;
+  background:var(--s0);
+}
+.gr-stage{
+  position:relative;
+  width:100%;
+  height:100vh;
+  height:100dvh;
+  overflow:hidden;
+}
+
+/* Photo layer */
+.gr-photo{
+  position:absolute;inset:0;z-index:1;
+  background-size:cover;background-position:center;
+  background-color:var(--s1);
+}
+.gr-photo.empty{
+  background-image:
+    radial-gradient(circle at 30% 30%,rgba(255,255,255,0.04) 0%,transparent 40%),
+    radial-gradient(circle at 70% 70%,rgba(255,255,255,0.03) 0%,transparent 40%),
+    linear-gradient(135deg,var(--s1) 0%,var(--s0) 100%);
+}
+
+/* Dark gradient for legibility - NO pointer events */
+.gr-grad{
+  position:absolute;inset:0;z-index:2;
+  pointer-events:none;
+  background:linear-gradient(180deg,
+    rgba(0,0,0,0.50) 0%,
+    rgba(0,0,0,0.10) 25%,
+    rgba(0,0,0,0.10) 55%,
+    rgba(0,0,0,0.40) 80%,
+    rgba(0,0,0,0.75) 100%);
+}
+
+/* Water layer rises from bottom - NO pointer events */
+.gr-water{
+  position:absolute;left:0;right:0;bottom:0;
+  height:0%;z-index:3;pointer-events:none;
+  transition:height 1.4s var(--spring);
+  overflow:visible;
+}
+.gr-water-body{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    rgba(96,165,250,0.30) 0%,
+    rgba(96,165,250,0.45) 50%,
+    rgba(59,130,246,0.65) 100%);
+}
+.gr-water-wave{
+  position:absolute;left:0;right:0;top:-18px;height:24px;
+  pointer-events:none;
+}
+.gr-water-wave svg{width:100%;height:100%;display:block;}
+.gr-water-line{
+  position:absolute;left:0;right:0;top:-2px;height:2px;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.5) 50%,transparent 100%);
+}
+
+/* Top header bar - HAS pointer events */
+.gr-top{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  padding:calc(var(--safe-t) + 14px) 20px 14px;
+}
+.gr-top-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.gr-back{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px 8px 10px;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:var(--r-pill);
+  color:#fff;font-size:13px;font-weight:600;
+}
+.gr-back:active{background:rgba(0,0,0,0.75);}
+.gr-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.gr-top-actions{display:flex;gap:8px;}
+.gr-iconbtn{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.14);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+}
+.gr-iconbtn:active{background:rgba(0,0,0,0.75);transform:scale(0.92);}
+.gr-iconbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Name input - HAS pointer events */
+.gr-name-inp{
+  width:100%;
+  padding:14px 18px;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.14);
+  border-radius:var(--r-lg);
+  color:#fff;font-size:16px;font-weight:700;
+  letter-spacing:-0.015em;
+}
+.gr-name-inp::placeholder{color:rgba(255,255,255,0.45);font-weight:500;}
+.gr-name-inp:focus{border-color:rgba(255,255,255,0.32);background:rgba(0,0,0,0.7);}
+
+/* Big "ADD PHOTO" button in center when empty - HAS pointer events */
+.gr-add-photo{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  z-index:8;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:14px;
+  padding:32px 26px;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border:1.5px dashed rgba(255,255,255,0.28);
+  border-radius:var(--r-2xl);
+  color:#fff;cursor:pointer;min-width:240px;
+}
+.gr-add-photo:active{background:rgba(0,0,0,0.75);transform:translate(-50%,-50%) scale(0.97);}
+.gr-add-photo svg{width:42px;height:42px;color:rgba(255,255,255,0.85);stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.gr-add-photo-t{font-size:16px;font-weight:700;letter-spacing:-0.01em;text-align:center;}
+.gr-add-photo-s{font-size:12px;color:rgba(255,255,255,0.6);text-align:center;margin-top:-6px;}
+
+/* Caption shown over photo when name is set */
+.gr-caption{
+  position:absolute;left:20px;right:20px;
+  bottom:calc(var(--safe-b) + 250px);
+  z-index:5;text-align:center;pointer-events:none;
+  font-size:38px;font-weight:900;color:#fff;
+  letter-spacing:-0.03em;line-height:1;
+  text-shadow:0 4px 24px rgba(0,0,0,0.7);
+  display:none;
+}
+.gr-stage.has-name .gr-caption{display:block;}
+
+/* Bottom panel - HAS pointer events on children */
+.gr-bottom{
+  position:absolute;left:0;right:0;bottom:0;
+  z-index:7;pointer-events:none;
+  padding:0 20px calc(var(--safe-b) + 84px);
+}
+.gr-bottom > *{pointer-events:auto;}
+.gr-bottom::before{
+  content:'';position:absolute;inset:-60px 0 0;
+  background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,0.55) 30%,rgba(0,0,0,0.88) 100%);
+  pointer-events:none;
+  z-index:-1;
+}
+.gr-bd-l{
+  font-size:10px;font-weight:800;letter-spacing:0.18em;
+  color:rgba(255,255,255,0.65);text-transform:uppercase;
+  text-align:center;
+}
+.gr-bd-n{
+  font-family:var(--mono);font-size:88px;font-weight:900;
+  color:#fff;letter-spacing:-0.05em;line-height:1;
+  text-align:center;margin-top:6px;font-variant-numeric:tabular-nums;
+  text-shadow:0 4px 24px rgba(0,0,0,0.6);
+}
+.gr-bd-u{
+  font-size:14px;font-weight:600;
+  color:rgba(255,255,255,0.8);text-align:center;
+  margin-top:2px;letter-spacing:-0.01em;
+}
+.gr-bd-d{
+  font-size:12px;color:rgba(255,255,255,0.55);
+  text-align:center;margin-top:8px;
+}
+
+.gr-pct-row{
+  display:flex;align-items:baseline;justify-content:space-between;
+  margin-top:18px;padding:0 4px;
+}
+.gr-pct{font-family:var(--mono);font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.025em;}
+.gr-saved{font-size:13px;color:rgba(255,255,255,0.7);font-variant-numeric:tabular-nums;font-family:var(--mono);}
+.gr-saved b{color:#fff;font-weight:700;}
+
+.gr-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  margin-top:14px;
+}
+.gr-stat{
+  padding:12px 8px;text-align:center;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:var(--r-md);
+}
+.gr-stat-v{font-family:var(--mono);font-size:14px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;}
+.gr-stat-l{font-size:9px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.55);text-transform:uppercase;margin-top:3px;}
+
+/* Safe modal */
+.sf-bal-card{
+  padding:18px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--r-md);text-align:center;margin-bottom:16px;
+}
+.sf-bal-l{font-size:10px;font-weight:800;letter-spacing:0.16em;color:var(--t5);text-transform:uppercase;}
+.sf-bal-v-row{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:8px;}
+.sf-bal-v{font-family:var(--mono);font-size:32px;font-weight:800;color:var(--t1);letter-spacing:-0.025em;font-variant-numeric:tabular-nums;}
+.sf-bal-c{font-size:14px;color:var(--t4);font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+<div class="shell-scroll" id="scroll">
+
+<!-- ========== WELCOME ========== -->
+<div class="sc act" id="sc-welcome">
+  <div class="wl-mark">
+    <div class="wl-mark-dot">V</div>
+    <div class="wl-mark-n">Veltrix Mind</div>
+  </div>
+  <div>
+    <div class="wl-title" id="wl-title">Cât durează<br>până ești<br><em>liber?</em></div>
+    <div class="wl-stat">
+      <div class="wl-stat-n">73%</div>
+      <div class="wl-stat-l" id="wl-stat-l">din români nu vor ajunge niciodată la libertate financiară reală</div>
+    </div>
+    <div class="wl-body" id="wl-body">Nu pentru că nu pot.<br>Pentru că <strong>nimeni nu le-a arătat cum.</strong><br><br>Introdu situația ta reală și vei vedea exact în câte zile ajungi la visul tău.</div>
+  </div>
+  <div style="margin-top:32px;">
+    <button class="btn btn-acc btn-block" onclick="goSetup()"><span id="btn-start-l">Începe calculul</span></button>
+  </div>
+</div>
+
+<!-- ========== SETUP (3 steps smooth) ========== -->
+<div class="sc" id="sc-setup">
+  <div class="setup-bar">
+    <div class="setup-dot act" id="sd-1"></div>
+    <div class="setup-dot" id="sd-2"></div>
+    <div class="setup-dot" id="sd-3"></div>
+  </div>
+  <div class="setup-back" id="setup-back" onclick="setupBack()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    <span id="setup-back-l">Înapoi</span>
+  </div>
+
+  <!-- Step 1: income -->
+  <div class="setup-step act" id="step-1">
+    <div class="setup-q" id="step1-q">Cât câștigi<br>pe <em>lună?</em></div>
+    <div class="setup-hint" id="step1-h">Venitul tău net, ce intră în cont în fiecare lună.</div>
+    <div class="setup-field">
+      <input class="inp inp-big" id="inp-inc" type="number" inputmode="decimal" placeholder="0">
+      <div class="setup-quick">
+        <button class="setup-chip" onclick="setQuick('inp-inc',3000)">3.000</button>
+        <button class="setup-chip" onclick="setQuick('inp-inc',5000)">5.000</button>
+        <button class="setup-chip" onclick="setQuick('inp-inc',7500)">7.500</button>
+        <button class="setup-chip" onclick="setQuick('inp-inc',10000)">10.000</button>
+      </div>
+    </div>
+    <div class="setup-spacer"></div>
+    <div class="setup-btn-wrap">
+      <button class="btn btn-acc btn-block" onclick="setupNext(1)"><span id="step1-next">Continuă</span></button>
+    </div>
+  </div>
+
+  <!-- Step 2: goal -->
+  <div class="setup-step" id="step-2">
+    <div class="setup-q" id="step2-q">Care este<br><em>obiectivul</em> tău?</div>
+    <div class="setup-hint" id="step2-h">Suma de bani pe care vrei să o strângi.</div>
+    <div class="setup-field">
+      <input class="inp inp-big" id="inp-goal" type="number" inputmode="decimal" placeholder="0">
+      <div class="setup-quick">
+        <button class="setup-chip" onclick="setQuick('inp-goal',10000)">10.000</button>
+        <button class="setup-chip" onclick="setQuick('inp-goal',25000)">25.000</button>
+        <button class="setup-chip" onclick="setQuick('inp-goal',50000)">50.000</button>
+        <button class="setup-chip" onclick="setQuick('inp-goal',100000)">100.000</button>
+      </div>
+    </div>
+    <div class="setup-spacer"></div>
+    <div class="setup-btn-wrap">
+      <button class="btn btn-acc btn-block" onclick="setupNext(2)"><span id="step2-next">Continuă</span></button>
+    </div>
+  </div>
+
+  <!-- Step 3: name -->
+  <div class="setup-step" id="step-3">
+    <div class="setup-q" id="step3-q">Care este<br><em>numele</em> tău?</div>
+    <div class="setup-hint" id="step3-h">Ca să te salutăm de fiecare dată când deschizi aplicația.</div>
+    <div class="setup-field">
+      <input class="inp" id="inp-name" type="text" placeholder="Numele tău" style="font-size:22px;padding:20px;text-align:center;">
+    </div>
+    <div class="setup-spacer"></div>
+    <div class="setup-btn-wrap">
+      <button class="btn btn-acc btn-block" onclick="finishSetup()"><span id="step3-next">Calculează</span></button>
+    </div>
+  </div>
+</div>
+<!-- ========== HOME (v16 layout) ========== -->
+<div class="sc" id="sc-home">
+  <!-- Top header: Editează / RO -->
+  <div class="h-bar">
+    <button class="h-bar-l" onclick="goSetup()">
+      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <span id="h-edit-l">Editează</span>
+    </button>
+    <div class="h-bar-r">
+      <button class="icon-btn" onclick="openLangModal()" aria-label="Limba">
+        <span class="lang-txt" id="lang-flag">RO</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Patriot/XP bar -->
+  <div class="h-patriot">
+    <span class="h-patriot-l" id="h-patriot-l">XP</span>
+    <div class="h-patriot-bar"><div class="h-patriot-bar-f" id="h-patriot-bar-f"></div></div>
+    <span class="h-patriot-v"><span id="h-patriot-v">0</span> <span id="h-patriot-u">pts</span></span>
+  </div>
+
+  <!-- Big circle countdown -->
+  <div class="hh-circle-wrap">
+    <div class="hh-circle">
+      <div class="hh-circle-n" id="hh-circle-n">—</div>
+      <div class="hh-circle-u" id="hh-circle-u">zile</div>
+    </div>
+    <div class="hh-sub"><span id="hh-sub-pref">zile până la</span> <b id="hh-sub-target">— lei</b></div>
+  </div>
+
+  <!-- Summary card 1: Cheltuit azi / Buget zilnic / Zile adăugate -->
+  <div class="sum-card">
+    <div class="sum-row">
+      <div class="sum-l" id="sum-l-spent">Cheltuit azi</div>
+      <div class="sum-v red mono"><span id="sum-spent">0</span> <span id="sum-spent-c">lei</span></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-l" id="sum-l-budget">Buget zilnic</div>
+      <div class="sum-v mono"><span id="sum-budget">0</span> <span id="sum-budget-c">lei</span></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-l" id="sum-l-added">Zile adăugate</div>
+      <div class="sum-v mono"><span id="sum-added">0</span> <span id="sum-added-c">zile</span></div>
+    </div>
+  </div>
+
+  <!-- Countdown reset card -->
+  <div class="cd-card">
+    <div class="cd-l" id="cd-l">Cheltuielile se resetează în</div>
+    <div class="cd-v mono" id="cd-v">00:00:00</div>
+  </div>
+
+  <!-- Savings slider card -->
+  <div class="sv-card">
+    <div class="sv-head">
+      <div class="sv-title" id="sv-title">Cât economisești</div>
+      <div class="sv-pct"><span id="sv-pct-v">40</span>%</div>
+    </div>
+    <div class="sv-slider-wrap" id="sv-slider-wrap">
+      <div class="sv-track"></div>
+      <div class="sv-fill" id="sv-fill"></div>
+      <div class="sv-thumb" id="sv-thumb"></div>
+    </div>
+    <div class="sv-foot">
+      <div class="sv-foot-l"><span id="sv-foot-l1">Economii:</span> <b><span id="sv-mon">0</span> <span id="sv-mon-c">lei/lună</span></b></div>
+      <div class="sv-foot-l"><span id="sv-foot-l2">Rămas:</span> <b><span id="sv-rem">0</span> <span id="sv-rem-c">lei</span></b></div>
+    </div>
+  </div>
+
+  <!-- SUMAR section -->
+  <div class="sm-sec">
+    <div class="sm-sec-t" id="sm-sec-t">Sumar</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-row">
+      <div class="sum-l" id="sm-l-net">Venit net</div>
+      <div class="sum-v mono"><span id="sm-net">0</span> <span id="sm-net-c">lei</span></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-l" id="sm-l-sav">Economii</div>
+      <div class="sum-v green mono">+<span id="sm-sav">0</span> <span id="sm-sav-c">lei</span></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-l" id="sm-l-abo">Plăți recurente</div>
+      <div class="sum-v red mono"><span id="sm-abo">0</span> <span id="sm-abo-c">lei</span></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-l" id="sm-l-safe">Strâns în Safe</div>
+      <div class="sum-v blue mono"><span id="sm-safe">0</span> <span id="sm-safe-c">lei</span></div>
+    </div>
+  </div>
+
+  <div style="padding:16px 20px 0;">
+    <button class="btn btn-ghost btn-block" onclick="openSafe()"><span id="btn-safe-l">Deschide Safe</span></button>
+  </div>
+
+</div>
+<!-- ========== SHOP / Produse (v16 list style) ========== -->
+<div class="sc" id="sc-shop">
+  <div class="page-h">
+    <div class="page-h-l">
+      <div class="page-greet" id="sh-greet">Adaugă</div>
+      <div class="page-title" id="sh-title">Produse</div>
+    </div>
+    <div class="page-h-r">
+      <button class="icon-btn" onclick="resetToday()" aria-label="Reset" title="Reset zi">
+        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="sh-search">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="sh-search-inp" id="sh-search-inp" type="text" placeholder="Caută produs..." oninput="filterShop()">
+  </div>
+
+  <!-- Category tabs -->
+  <div class="sh-tabs" id="sh-tabs"></div>
+
+  <!-- Product list -->
+  <div id="sh-list-wrap"></div>
+
+  <!-- Manual add -->
+  <div class="sm-sec">
+    <div class="sm-sec-t" id="sh-manual-t">Adaugă manual</div>
+  </div>
+  <div style="display:flex;gap:8px;padding:0 20px;">
+    <input class="inp" id="c-name" type="text" placeholder="Ce ai cumpărat?" style="flex:1;">
+    <input class="inp mono" id="c-price" type="number" inputmode="decimal" placeholder="0" style="flex:0 0 100px;text-align:right;font-family:var(--mono);">
+    <button class="btn btn-acc" onclick="addCustom()" style="padding:0 18px;font-size:20px;">+</button>
+  </div>
+</div>
+<!-- ========== GRAFIC — full screen photo ========== -->
+<div class="sc" id="sc-grafic">
+  <div class="gr-stage" id="gr-stage">
+
+    <!-- Photo layer -->
+    <div class="gr-photo empty" id="gr-photo"></div>
+
+    <!-- Dark gradient overlay (pointer-events:none) -->
+    <div class="gr-grad"></div>
+
+    <!-- Water rising from bottom (pointer-events:none) -->
+    <div class="gr-water" id="gr-water" style="height:0%;">
+      <div class="gr-water-line"></div>
+      <div class="gr-water-wave">
+        <svg viewBox="0 0 1200 24" preserveAspectRatio="none">
+          <path fill="rgba(96,165,250,0.55)" d="M0,12 Q150,0 300,12 T600,12 T900,12 T1200,12 L1200,24 L0,24 Z">
+            <animate attributeName="d" dur="4s" repeatCount="indefinite"
+              values="M0,12 Q150,0 300,12 T600,12 T900,12 T1200,12 L1200,24 L0,24 Z;
+                      M0,12 Q150,24 300,12 T600,12 T900,12 T1200,12 L1200,24 L0,24 Z;
+                      M0,12 Q150,0 300,12 T600,12 T900,12 T1200,12 L1200,24 L0,24 Z"/>
+          </path>
+        </svg>
+      </div>
+      <div class="gr-water-body"></div>
+    </div>
+
+    <!-- Goal name caption -->
+    <div class="gr-caption" id="gr-caption"></div>
+
+    <!-- Top header: back + actions + name input -->
+    <div class="gr-top">
+      <div class="gr-top-row">
+        <button class="gr-back" onclick="goTo('home')">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          <span id="gr-back-l">Acasă</span>
+        </button>
+        <div class="gr-top-actions">
+          <button class="gr-iconbtn" onclick="document.getElementById('goal-photo-input').click()" aria-label="Schimbă poza">
+            <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="gr-iconbtn" id="gr-clear-btn" onclick="clearGoalPhoto()" aria-label="Șterge poza" style="display:none;">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <input class="gr-name-inp" id="grafic-obj-name" type="text" placeholder="Numele visului tău">
+    </div>
+
+    <!-- Big ADD PHOTO button when empty -->
+    <button class="gr-add-photo" id="gr-add-photo" onclick="document.getElementById('goal-photo-input').click()">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="12" cy="12" r="3"/><path d="M3 17l5-5 4 4 3-3 6 6"/></svg>
+      <div class="gr-add-photo-t" id="gr-add-photo-t">Adaugă o poză cu visul tău</div>
+      <div class="gr-add-photo-s" id="gr-add-photo-s">apare pe tot ecranul</div>
+    </button>
+
+    <!-- File input -->
+    <input type="file" id="goal-photo-input" accept="image/*" style="display:none">
+
+    <!-- Bottom panel -->
+    <div class="gr-bottom">
+      <div class="gr-bd-l" id="gr-bd-l">În câte zile ajungi acolo</div>
+      <div class="gr-bd-n" id="gr-bd-n">—</div>
+      <div class="gr-bd-u" id="gr-bd-u">zile</div>
+      <div class="gr-bd-d" id="gr-bd-d">—</div>
+
+      <div class="gr-pct-row">
+        <div class="gr-pct mono"><span id="gr-pct">0</span>%</div>
+        <div class="gr-saved mono"><b><span id="gr-saved">0</span></b> / <span id="gr-target">0</span> <span id="gr-cur">lei</span></div>
+      </div>
+
+      <div class="gr-stats">
+        <div class="gr-stat">
+          <div class="gr-stat-v mono"><span id="gr-st-rem">0</span></div>
+          <div class="gr-stat-l" id="gr-st-rem-l">Lipsește</div>
+        </div>
+        <div class="gr-stat">
+          <div class="gr-stat-v mono"><span id="gr-st-mon">0</span></div>
+          <div class="gr-stat-l" id="gr-st-mon-l">Luni</div>
+        </div>
+        <div class="gr-stat">
+          <div class="gr-stat-v mono"><span id="gr-st-day">0</span></div>
+          <div class="gr-stat-l" id="gr-st-day-l">Lei/zi</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== CALENDAR ========== -->
+<div class="sc" id="sc-cal">
+  <div class="page-h">
+    <div class="page-h-l">
+      <div class="page-greet" id="cal-greet">Istoric</div>
+      <div class="page-title" id="cal-title">Calendar</div>
+    </div>
+  </div>
+  <div class="cal-head">
+    <button class="cal-nav-btn" onclick="calNav(-1)" aria-label="Anterior">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cal-month-name" id="cal-month-name">—</div>
+    <button class="cal-nav-btn" onclick="calNav(1)" aria-label="Următor">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div class="cal-detail" id="cal-detail"></div>
+</div>
+
+<!-- ========== ABO / PLĂȚI ========== -->
+<div class="sc" id="sc-abo">
+  <div class="page-h">
+    <div class="page-h-l">
+      <div class="page-greet" id="abo-greet">Plăți recurente</div>
+      <div class="page-title" id="abo-title">Abonamente</div>
+    </div>
+  </div>
+  <div class="abo-totals">
+    <div class="abo-tot">
+      <div class="abo-tot-l" id="abo-tot-l-total">Total lunar</div>
+      <div class="abo-tot-v mono"><span id="abo-total">0</span></div>
+    </div>
+    <div class="abo-tot paid">
+      <div class="abo-tot-l" id="abo-tot-l-paid">Plătit</div>
+      <div class="abo-tot-v mono"><span id="abo-paid">0</span></div>
+    </div>
+    <div class="abo-tot rem">
+      <div class="abo-tot-l" id="abo-tot-l-rem">Rămas</div>
+      <div class="abo-tot-v mono"><span id="abo-rem">0</span></div>
+    </div>
+  </div>
+
+  <button class="abo-add-btn" onclick="openAboAdd()">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span id="abo-add-l">Adaugă abonament</span>
+  </button>
+
+  <div class="abo-grp-h">
+    <div class="abo-grp-t" id="abo-unp-t">Neplătite</div>
+    <div class="abo-grp-c"><span id="abo-unp-c">0</span></div>
+  </div>
+  <div class="abo-list" id="abo-unpaid-list"></div>
+
+  <div class="abo-grp-h">
+    <div class="abo-grp-t" id="abo-pd-t">Plătite</div>
+    <div class="abo-grp-c"><span id="abo-pd-c">0</span></div>
+  </div>
+  <div class="abo-list" id="abo-paid-list"></div>
+
+  <div class="abo-grp-h"><div class="abo-grp-t" id="abo-yr-t">Pe an</div></div>
+  <div class="abo-yr-row">
+    <div class="abo-yr"><div class="abo-yr-l" id="abo-yr-l1">Pe lună</div><div class="abo-yr-v mono"><span id="abo-yr-mon">0</span></div></div>
+    <div class="abo-yr"><div class="abo-yr-l" id="abo-yr-l2">Pe an</div><div class="abo-yr-v mono"><span id="abo-yr-yr">0</span></div></div>
+    <div class="abo-yr wide"><div class="abo-yr-l" id="abo-yr-l3">Cel mai scump</div><div class="abo-yr-v" style="font-size:14px;font-family:var(--font);"><span id="abo-yr-max">—</span></div></div>
+  </div>
+</div>
+
+<!-- ========== JOCURI ========== -->
+<div class="sc" id="sc-quiz">
+  <div class="page-h">
+    <div class="page-h-l">
+      <div class="page-greet" id="qz-greet">Învață și câștigă</div>
+      <div class="page-title" id="qz-title">Jocuri</div>
+    </div>
+  </div>
+
+  <div class="qz-stats">
+    <div class="qz-stat">
+      <div class="qz-stat-v mono" id="streak-num">0</div>
+      <div class="qz-stat-l" id="streak-lbl">Zile la rând</div>
+    </div>
+    <div class="qz-stat">
+      <div class="qz-stat-v mono" id="xp-num">0</div>
+      <div class="qz-stat-l">XP</div>
+    </div>
+  </div>
+
+  <div class="qz-games">
+    <button class="qz-game" onclick="startGame('quiz')">
+      <div class="qz-game-ico">Q</div>
+      <div class="qz-game-n" id="g-quiz-n">Quiz financiar</div>
+      <div class="qz-game-s" id="g-quiz-s">10 întrebări</div>
+    </button>
+    <button class="qz-game" onclick="startGame('pret')">
+      <div class="qz-game-ico">P</div>
+      <div class="qz-game-n" id="g-pret-n">Ghicește prețul</div>
+      <div class="qz-game-s" id="g-pret-s">Un singur shot</div>
+    </button>
+    <button class="qz-game" onclick="startGame('roman')">
+      <div class="qz-game-ico">R</div>
+      <div class="qz-game-n" id="g-rom-n">Local sau străin?</div>
+      <div class="qz-game-s" id="g-rom-s">6 branduri</div>
+    </button>
+    <button class="qz-game" onclick="startGame('calc')">
+      <div class="qz-game-ico">C</div>
+      <div class="qz-game-n" id="g-calc-n">Calcul mental</div>
+      <div class="qz-game-s" id="g-calc-s">6 runde</div>
+    </button>
+  </div>
+
+  <div class="qz-prize">
+    <div class="qz-prize-tag" id="prize-tag">Premiu lunar</div>
+    <div class="qz-prize-t" id="prize-title">Primii 3 din România câștigă <em>1.000 €</em></div>
+    <div class="qz-prize-s" id="prize-sub">Adună zile la rând și puncte XP în Veltrix Mind. La sfârșitul fiecărei luni, primii 3 utilizatori cu cele mai multe zile și puncte primesc 1.000 € fiecare ca să-și atingă mai repede obiectivul.</div>
+    <div class="qz-prize-foot" id="prize-foot-l">Clasamentul se resetează în fiecare lună.</div>
+  </div>
+
+  <div class="abo-grp-h">
+    <div class="abo-grp-t" id="lb-sec-t">Top România</div>
+    <div class="abo-grp-c" id="lb-month">Luna curentă</div>
+  </div>
+  <div class="lb-list" id="lb-list"></div>
+</div>
+</div><!-- /scroll -->
+
+<!-- ========== TABBAR ========== -->
+<div class="tabbar" id="tabbar" style="display:none;">
+  <button class="tab act" id="tab-home" onclick="goTo('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+    <span class="tab-l" id="tb-home">Acasă</span>
+  </button>
+  <button class="tab" id="tab-grafic" onclick="goTo('grafic')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+    <span class="tab-l" id="tb-grafic">Grafic</span>
+  </button>
+  <button class="tab" id="tab-cal" onclick="goTo('cal')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <span class="tab-l" id="tb-cal">Calendar</span>
+  </button>
+  <button class="tab" id="tab-shop" onclick="goTo('shop')">
+    <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <span class="tab-l" id="tb-shop">Shop</span>
+  </button>
+  <button class="tab" id="tab-quiz" onclick="goTo('quiz')">
+    <svg viewBox="0 0 24 24"><path d="M6 9h12l-1 12H7z"/><path d="M9 9V5a3 3 0 0 1 6 0v4"/></svg>
+    <span class="tab-l" id="tb-quiz">Jocuri</span>
+  </button>
+  <button class="tab" id="tab-abo" onclick="goTo('abo')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    <span class="tab-l" id="tb-abo">Plăți</span>
+  </button>
+</div>
+</div><!-- /shell -->
+
+<!-- Toast host -->
+<div class="toast-host" id="toast-host"></div>
+
+<!-- ========== LANG MODAL ========== -->
+<div class="modal" id="lang-modal" onclick="if(event.target===this)closeLangModal()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="font-size:20px;font-weight:800;color:var(--t1);margin-bottom:4px;" id="lm-t">Limba</div>
+    <div style="font-size:13px;color:var(--t4);margin-bottom:18px;" id="lm-s">Alege limba aplicației</div>
+    <div class="lang-list" id="lang-list"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeLangModal()" id="lm-close">Închide</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SAFE MODAL ========== -->
+<div class="modal" id="safe-modal" onclick="if(event.target===this)closeSafe()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="font-size:20px;font-weight:800;color:var(--t1);margin-bottom:4px;" id="sf-t">Safe / Economii</div>
+    <div style="font-size:13px;color:var(--t4);margin-bottom:16px;" id="sf-s">Depune sau retrage economii</div>
+    <div class="sf-bal-card">
+      <div class="sf-bal-l" id="sf-bal-l">Sold curent</div>
+      <div class="sf-bal-v-row">
+        <span class="sf-bal-v mono" id="sf-bal-v">0</span>
+        <span class="sf-bal-c" id="sf-bal-c">lei</span>
+      </div>
+    </div>
+    <input class="inp inp-big" id="safe-input" type="number" inputmode="decimal" placeholder="0">
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="withdrawSafe()" id="sf-wit">Retrage</button>
+      <button class="btn btn-acc" onclick="depositSafe()" id="sf-dep">Depune</button>
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="btn btn-ghost" onclick="closeSafe()" id="sf-close" style="font-size:13px;padding:10px 18px;">Închide</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ABO ADD MODAL ========== -->
+<div class="modal" id="abo-add-modal" onclick="if(event.target===this)closeAboAdd()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="font-size:20px;font-weight:800;color:var(--t1);margin-bottom:4px;" id="aa-t">Adaugă abonament</div>
+    <div style="font-size:13px;color:var(--t4);margin-bottom:16px;" id="aa-s">Alege un preset sau scrie tu</div>
+    <div class="abo-presets" id="abo-presets"></div>
+    <div style="font-size:11px;color:var(--t5);letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:6px;" id="aa-l-n">Nume</div>
+    <input class="inp" id="abo-name-inp" type="text" placeholder="Nume" style="margin-bottom:10px;">
+    <div style="font-size:11px;color:var(--t5);letter-spacing:0.08em;text-transform:uppercase;font-weight:700;margin-bottom:6px;" id="aa-l-p">Preț pe lună</div>
+    <input class="inp mono" id="abo-price-inp" type="number" inputmode="decimal" placeholder="0">
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeAboAdd()" id="aa-cancel">Anulează</button>
+      <button class="btn btn-acc" onclick="confirmAboAdd()" id="aa-confirm">Adaugă</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== QUIZ MODAL ========== -->
+<div class="modal" id="quiz-modal" onclick="if(event.target===this)closeQuiz()">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="qz-modal-body" id="quiz-body"></div>
+    <div class="sheet-actions" id="quiz-foot" style="display:none;">
+      <button class="btn btn-ghost" onclick="closeQuiz()" id="qz-close">Închide</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+var STORAGE_KEY = 'veltrix.mind.v20';
+var DEFAULT_STATE = {
+  income:0, goal:0, goalName:'', goalImg:null,
+  name:'', lang:'ro',
+  history:{}, safe:0,
+  savingsPct:40,
+  xp:0, streak:0, lastPlayDate:null,
+  abos:[], aboLastMonth:null,
+  startDate:null, setupDone:false, setupStep:1,
+  curCat:'fast'
+};
+function loadState(){
+  try{
+    var raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    var p=JSON.parse(raw);
+    for(var k in DEFAULT_STATE) if(p[k]===undefined) p[k]=DEFAULT_STATE[k];
+    return p;
+  }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+}
+function sv(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(S)); }catch(e){} }
+var S = loadState();
+var LANG = S.lang || 'ro';
+
+// ============================================================
+// UTILS
+// ============================================================
+function $(id){ return document.getElementById(id); }
+function setText(id,v){ var el=$(id); if(el) el.textContent=v; }
+function setHTML(id,v){ var el=$(id); if(el) el.innerHTML=v; }
+function fmt(n){
+  n = Math.round(Number(n)||0);
+  return n.toLocaleString('ro-RO').replace(/,/g,'.');
+}
+function fmtK(n){
+  n = Math.round(Number(n)||0);
+  if(n>=10000) return (n/1000).toFixed(1).replace(/\.0$/,'')+'K';
+  return fmt(n);
+}
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function uid(){ return 'x'+Math.random().toString(36).slice(2,9); }
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function notify(msg){
+  var host=$('toast-host'); if(!host) return;
+  var t=document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  host.appendChild(t);
+  setTimeout(function(){ t.classList.add('out'); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 320); }, 2300);
+}
+
+// ============================================================
+// LANGUAGES
+// ============================================================
+var LANGS = {
+  ro: {
+    code:'ro', flag:'RO', cur:'RON', sym:'lei',
+    btnStart:'Începe calculul',
+    welcomeStat:'din români nu vor ajunge niciodată la libertate financiară reală',
+    setupBack:'Înapoi',
+    step1Q:['Cât câștigi','pe ','lună?'], step1H:'Venitul tău net, ce intră în cont în fiecare lună.',
+    step2Q:['Care este','obiectivul',' tău?'], step2H:'Suma de bani pe care vrei să o strângi.',
+    step3Q:['Care este','numele',' tău?'], step3H:'Ca să te salutăm de fiecare dată când deschizi aplicația.',
+    stepNext:'Continuă', calc:'Calculează', namePh:'Numele tău',
+    hEdit:'Editează', hPatriotL:'XP', hPatriotU:'pts',
+    hhCircleU:'zile', hhSubPref:'zile până la',
+    sumLSpent:'Cheltuit azi', sumLBudget:'Buget zilnic', sumLAdded:'Zile adăugate',
+    sumZile:'zile', cdL:'Cheltuielile se resetează în',
+    svTitle:'Cât economisești', svFootL1:'Economii:', svMonC:'lei/lună', svFootL2:'Rămas:', svRemC:'lei',
+    smSecT:'Sumar', smLNet:'Venit net', smLSav:'Economii', smLAbo:'Plăți recurente', smLSafe:'Strâns în Safe',
+    btnSafeL:'Deschide Safe',
+    shGreet:'Adaugă', shTitle:'Produse', shSearch:'Caută produs...',
+    shGrpRo:'Românești', shGrpInt:'Ne-Românești', shManualT:'Adaugă manual',
+    cNamePh:'Ce ai cumpărat?',
+    catFast:'Fast Food', catSuper:'Supermarketuri', catAli:'Alimente', catBenz:'Benzinării',
+    catCafe:'Cafea', catTrans:'Transport', catDistr:'Distracție', catFash:'Fashion',
+    catRest:'Restaurant', catFarma:'Farmacie', catBric:'Bricolaj', catAlte:'Altele',
+    rowUnit:'lei/buc',
+    grBackL:'Acasă', grNamePh:'Numele visului tău',
+    grAddT:'Adaugă o poză cu visul tău', grAddS:'apare pe tot ecranul',
+    grBdL:'În câte zile ajungi acolo', grBdU:'zile',
+    grStRem:'Lipsește', grStMon:'Luni', grStDay:'Lei/zi',
+    calGreet:'Istoric', calTitle:'Calendar',
+    aboGreet:'Plăți recurente', aboTitle:'Abonamente',
+    aboTotLTotal:'Total lunar', aboTotLPaid:'Plătit', aboTotLRem:'Rămas',
+    aboAddL:'Adaugă abonament', aboUnpT:'Neplătite', aboPdT:'Plătite',
+    aboYrT:'Pe an', aboYrL1:'Pe lună', aboYrL2:'Pe an', aboYrL3:'Cel mai scump',
+    qzGreet:'Învață și câștigă', qzTitle:'Jocuri', streakLbl:'Zile la rând',
+    gQuizN:'Quiz financiar', gQuizS:'10 întrebări',
+    gPretN:'Ghicește prețul', gPretS:'Un singur shot',
+    gRomN:'Local sau străin?', gRomS:'6 branduri',
+    gCalcN:'Calcul mental', gCalcS:'6 runde',
+    prizeTag:'Premiu lunar',
+    prizeTitle:['Primii 3 din România câștigă','1.000 €'],
+    prizeSub:'Adună zile la rând și puncte XP în Veltrix Mind. La sfârșitul fiecărei luni, primii 3 utilizatori cu cele mai multe zile și puncte primesc 1.000 € fiecare ca să-și atingă mai repede obiectivul.',
+    prizeFoot:'Clasamentul se resetează în fiecare lună.',
+    lbSecT:'Top România', lbMonth:'Luna curentă',
+    lmT:'Limba', lmS:'Alege limba aplicației', lmClose:'Închide',
+    sfT:'Safe / Economii', sfS:'Depune sau retrage economii',
+    sfBalL:'Sold curent', sfBalC:'lei', sfDep:'Depune', sfWit:'Retrage', sfClose:'Închide',
+    aaT:'Adaugă abonament', aaS:'Alege un preset sau scrie tu',
+    aaLN:'Nume', aaLP:'Preț pe lună', aaCancel:'Anulează', aaConfirm:'Adaugă',
+    qzClose:'Închide',
+    tbHome:'Acasă', tbGrafic:'Grafic', tbCal:'Calendar', tbShop:'Shop', tbQuiz:'Jocuri', tbAbo:'Plăți'
+  },
+  en: {
+    code:'en', flag:'EN', cur:'EUR', sym:'€',
+    btnStart:'Start calculation',
+    welcomeStat:'of people never reach true financial freedom',
+    setupBack:'Back',
+    step1Q:['How much do you earn','per ','month?'], step1H:'Your net income, what hits the account each month.',
+    step2Q:['What is your','goal',' amount?'], step2H:'The amount of money you want to save.',
+    step3Q:['What is your','name','?'], step3H:'So we can greet you each time you open the app.',
+    stepNext:'Continue', calc:'Calculate', namePh:'Your name',
+    hEdit:'Edit', hPatriotL:'XP', hPatriotU:'pts',
+    hhCircleU:'days', hhSubPref:'days until',
+    sumLSpent:'Spent today', sumLBudget:'Daily budget', sumLAdded:'Days added',
+    sumZile:'days', cdL:'Expenses reset in',
+    svTitle:'How much you save', svFootL1:'Savings:', svMonC:'/month', svFootL2:'Left:', svRemC:'',
+    smSecT:'Summary', smLNet:'Net income', smLSav:'Savings', smLAbo:'Recurring', smLSafe:'In Safe',
+    btnSafeL:'Open Safe',
+    shGreet:'Add', shTitle:'Products', shSearch:'Search product...',
+    shGrpRo:'Local', shGrpInt:'International', shManualT:'Add manually',
+    cNamePh:'What did you buy?',
+    catFast:'Fast Food', catSuper:'Supermarket', catAli:'Groceries', catBenz:'Gas station',
+    catCafe:'Coffee', catTrans:'Transport', catDistr:'Entertainment', catFash:'Fashion',
+    catRest:'Restaurant', catFarma:'Pharmacy', catBric:'DIY', catAlte:'Other',
+    rowUnit:'/unit',
+    grBackL:'Home', grNamePh:'Name your dream',
+    grAddT:'Add a photo of your dream', grAddS:'fills the screen',
+    grBdL:'Days until you reach it', grBdU:'days',
+    grStRem:'Remaining', grStMon:'Months', grStDay:'/day',
+    calGreet:'History', calTitle:'Calendar',
+    aboGreet:'Recurring', aboTitle:'Subscriptions',
+    aboTotLTotal:'Monthly total', aboTotLPaid:'Paid', aboTotLRem:'Remaining',
+    aboAddL:'Add subscription', aboUnpT:'Unpaid', aboPdT:'Paid',
+    aboYrT:'Per year', aboYrL1:'Per month', aboYrL2:'Per year', aboYrL3:'Most expensive',
+    qzGreet:'Learn & earn', qzTitle:'Games', streakLbl:'Day streak',
+    gQuizN:'Finance quiz', gQuizS:'10 questions',
+    gPretN:'Guess the price', gPretS:'Single shot',
+    gRomN:'Local or foreign?', gRomS:'6 brands',
+    gCalcN:'Mental math', gCalcS:'6 rounds',
+    prizeTag:'Monthly prize',
+    prizeTitle:['Top 3 in Romania win','€1,000'],
+    prizeSub:'Collect streak days and XP. At the end of each month, the top 3 users receive €1,000 each to reach their goal faster.',
+    prizeFoot:'Leaderboard resets each month.',
+    lbSecT:'Romania top', lbMonth:'This month',
+    lmT:'Language', lmS:'Pick the app language', lmClose:'Close',
+    sfT:'Safe / Savings', sfS:'Deposit or withdraw',
+    sfBalL:'Current balance', sfBalC:'', sfDep:'Deposit', sfWit:'Withdraw', sfClose:'Close',
+    aaT:'Add subscription', aaS:'Pick a preset or type your own',
+    aaLN:'Name', aaLP:'Price per month', aaCancel:'Cancel', aaConfirm:'Add',
+    qzClose:'Close',
+    tbHome:'Home', tbGrafic:'Goal', tbCal:'Calendar', tbShop:'Shop', tbQuiz:'Games', tbAbo:'Subs'
+  }
+};
+var T = LANGS[LANG];
+
+// ============================================================
+// CATEGORIES
+// ============================================================
+var CATEGORIES = [
+  {id:'fast',  name_ro:'Fast Food',     name_en:'Fast Food'},
+  {id:'super', name_ro:'Supermarketuri',name_en:'Supermarket'},
+  {id:'ali',   name_ro:'Alimente',      name_en:'Groceries'},
+  {id:'benz',  name_ro:'Benzinării',    name_en:'Gas'},
+  {id:'cafe',  name_ro:'Cafea',         name_en:'Coffee'},
+  {id:'trans', name_ro:'Transport',     name_en:'Transport'},
+  {id:'distr', name_ro:'Distracție',    name_en:'Fun'},
+  {id:'fash',  name_ro:'Fashion',       name_en:'Fashion'},
+  {id:'rest',  name_ro:'Restaurant',    name_en:'Restaurant'},
+  {id:'farma', name_ro:'Farmacie',      name_en:'Pharmacy'},
+  {id:'bric',  name_ro:'Bricolaj',      name_en:'DIY'},
+  {id:'alte',  name_ro:'Altele',        name_en:'Other'}
+];
+
+// Products: name, price, category, ess (essential), ro (Romanian?)
+var CATALOG = [
+  // ===== FAST FOOD =====
+  {n:'Fryday - meniu', p:40, c:'fast', ess:false, ro:true},
+  {n:'Fryday - burger', p:20, c:'fast', ess:false, ro:true},
+  {n:'Shaorma mare', p:30, c:'fast', ess:false, ro:true},
+  {n:'Shaorma mică', p:18, c:'fast', ess:false, ro:true},
+  {n:'Covrig simplu', p:3, c:'fast', ess:false, ro:true},
+  {n:'Covrig cu brânză', p:5, c:'fast', ess:false, ro:true},
+  {n:'Placintă / Foietaj', p:6, c:'fast', ess:false, ro:true},
+  {n:'Pizza locală (slice)', p:15, c:'fast', ess:false, ro:true},
+  {n:'Cafea cafenea locală', p:12, c:'fast', ess:false, ro:true},
+  {n:'McDonald\'s - meniu', p:45, c:'fast', ess:false, ro:false},
+  {n:'McDonald\'s - Big Mac', p:18, c:'fast', ess:false, ro:false},
+  {n:'KFC - meniu', p:42, c:'fast', ess:false, ro:false},
+  {n:'KFC - bucket', p:90, c:'fast', ess:false, ro:false},
+  {n:'Subway sandwich', p:28, c:'fast', ess:false, ro:false},
+  {n:'Burger King meniu', p:40, c:'fast', ess:false, ro:false},
+  {n:'Springtime meniu', p:35, c:'fast', ess:false, ro:true},
+  {n:'Hot dog stradă', p:10, c:'fast', ess:false, ro:true},
+  {n:'Wrap pui', p:24, c:'fast', ess:false, ro:false},
+  {n:'Nuggets pui', p:20, c:'fast', ess:false, ro:false},
+  {n:'Cartofi prăjiți', p:12, c:'fast', ess:false, ro:false},
+
+  // ===== SUPERMARKET =====
+  {n:'Coș Lidl săptămânal', p:220, c:'super', ess:true, ro:false},
+  {n:'Coș Kaufland săptămânal', p:280, c:'super', ess:true, ro:false},
+  {n:'Coș Carrefour săptămânal', p:310, c:'super', ess:true, ro:false},
+  {n:'Coș Penny rapid', p:180, c:'super', ess:true, ro:false},
+  {n:'Coș Profi rapid', p:160, c:'super', ess:true, ro:true},
+  {n:'Coș Mega Image', p:260, c:'super', ess:true, ro:false},
+  {n:'Coș Auchan', p:290, c:'super', ess:true, ro:false},
+  {n:'Coș lunar mare', p:850, c:'super', ess:true, ro:false},
+  {n:'Selgros - mare', p:600, c:'super', ess:true, ro:false},
+  {n:'Cora coș', p:300, c:'super', ess:true, ro:false},
+  {n:'Băuturi weekend', p:95, c:'super', ess:false, ro:false},
+
+  // ===== ALIMENTE =====
+  {n:'Pâine', p:6, c:'ali', ess:true, ro:true},
+  {n:'Lapte 1L', p:9, c:'ali', ess:true, ro:true},
+  {n:'Ouă (10 buc)', p:14, c:'ali', ess:true, ro:true},
+  {n:'Piept de pui 1kg', p:35, c:'ali', ess:true, ro:true},
+  {n:'Carne vită 1kg', p:65, c:'ali', ess:true, ro:true},
+  {n:'Orez 1kg', p:8, c:'ali', ess:true, ro:false},
+  {n:'Paste 500g', p:7, c:'ali', ess:true, ro:false},
+  {n:'Ulei 1L', p:11, c:'ali', ess:true, ro:true},
+  {n:'Zahăr 1kg', p:6, c:'ali', ess:true, ro:true},
+  {n:'Făină 1kg', p:5, c:'ali', ess:true, ro:true},
+  {n:'Cartofi 2kg', p:9, c:'ali', ess:true, ro:true},
+  {n:'Roșii 1kg', p:12, c:'ali', ess:true, ro:true},
+  {n:'Mere 1kg', p:8, c:'ali', ess:true, ro:true},
+  {n:'Banane 1kg', p:9, c:'ali', ess:true, ro:false},
+  {n:'Brânză 500g', p:22, c:'ali', ess:true, ro:true},
+  {n:'Iaurt 4 buc', p:10, c:'ali', ess:true, ro:true},
+  {n:'Cașcaval 500g', p:35, c:'ali', ess:true, ro:true},
+  {n:'Salam Sibiu', p:55, c:'ali', ess:false, ro:true},
+
+  // ===== BENZINARII =====
+  {n:'Rompetrol - plin 40L', p:300, c:'benz', ess:true, ro:true},
+  {n:'Petrom - plin 40L', p:298, c:'benz', ess:true, ro:true},
+  {n:'OMV - plin 40L', p:308, c:'benz', ess:true, ro:false},
+  {n:'MOL - plin 40L', p:302, c:'benz', ess:true, ro:false},
+  {n:'Lukoil - plin 40L', p:296, c:'benz', ess:true, ro:false},
+  {n:'Motorină 40L', p:292, c:'benz', ess:true, ro:false},
+  {n:'GPL 30L', p:130, c:'benz', ess:true, ro:false},
+  {n:'AdBlue', p:35, c:'benz', ess:true, ro:false},
+  {n:'Spălătorie auto', p:30, c:'benz', ess:true, ro:true},
+
+  // ===== CAFEA =====
+  {n:'Cafea locală cafenea', p:12, c:'cafe', ess:false, ro:true},
+  {n:'Espresso cafenea', p:8, c:'cafe', ess:false, ro:true},
+  {n:'Cappuccino cafenea', p:14, c:'cafe', ess:false, ro:true},
+  {n:'Latte cafenea', p:16, c:'cafe', ess:false, ro:true},
+  {n:'Ted\'s Coffee', p:15, c:'cafe', ess:false, ro:true},
+  {n:'Starbucks latte', p:25, c:'cafe', ess:false, ro:false},
+  {n:'Starbucks americano', p:18, c:'cafe', ess:false, ro:false},
+  {n:'Frappuccino', p:28, c:'cafe', ess:false, ro:false},
+  {n:'Ciocolată caldă', p:18, c:'cafe', ess:false, ro:false},
+  {n:'Suc proaspăt portocale', p:18, c:'cafe', ess:false, ro:true},
+
+  // ===== TRANSPORT =====
+  {n:'Bilet metrou', p:3, c:'trans', ess:true, ro:true},
+  {n:'Abonament metrou lunar', p:80, c:'trans', ess:true, ro:true},
+  {n:'Bilet STB/RATB', p:3, c:'trans', ess:true, ro:true},
+  {n:'Bolt cursă scurtă', p:12, c:'trans', ess:false, ro:false},
+  {n:'Bolt cursă medie', p:22, c:'trans', ess:false, ro:false},
+  {n:'Bolt cursă lungă', p:45, c:'trans', ess:false, ro:false},
+  {n:'Uber cursă', p:20, c:'trans', ess:false, ro:false},
+  {n:'Taxi clasic', p:25, c:'trans', ess:false, ro:true},
+  {n:'Bilet tren scurt', p:25, c:'trans', ess:true, ro:true},
+  {n:'Bilet tren lung', p:120, c:'trans', ess:false, ro:true},
+  {n:'Parcare 1h', p:5, c:'trans', ess:false, ro:true},
+  {n:'Trotinetă Bolt', p:8, c:'trans', ess:false, ro:false},
+
+  // ===== DISTRACTIE =====
+  {n:'Cinema bilet', p:30, c:'distr', ess:false, ro:true},
+  {n:'Cinema 2 bilete', p:60, c:'distr', ess:false, ro:true},
+  {n:'Bilet club seara', p:50, c:'distr', ess:false, ro:true},
+  {n:'Băutură club', p:35, c:'distr', ess:false, ro:true},
+  {n:'Bowling 1h', p:60, c:'distr', ess:false, ro:true},
+  {n:'Escape room', p:60, c:'distr', ess:false, ro:true},
+  {n:'Karaoke 2h', p:80, c:'distr', ess:false, ro:true},
+  {n:'Bilet teatru', p:60, c:'distr', ess:false, ro:true},
+  {n:'Bilet muzeu', p:25, c:'distr', ess:false, ro:true},
+  {n:'Bilet concert', p:200, c:'distr', ess:false, ro:false},
+  {n:'Festival 1 zi', p:250, c:'distr', ess:false, ro:false},
+
+  // ===== FASHION =====
+  {n:'Tricou H&M', p:70, c:'fash', ess:false, ro:false},
+  {n:'Tricou Zara', p:100, c:'fash', ess:false, ro:false},
+  {n:'Blugi Zara', p:200, c:'fash', ess:false, ro:false},
+  {n:'Blugi H&M', p:130, c:'fash', ess:false, ro:false},
+  {n:'Adidași Nike', p:550, c:'fash', ess:false, ro:false},
+  {n:'Adidași Adidas', p:500, c:'fash', ess:false, ro:false},
+  {n:'Hanorac Nike', p:350, c:'fash', ess:false, ro:false},
+  {n:'Geacă Bershka', p:280, c:'fash', ess:false, ro:false},
+  {n:'Geacă iarnă', p:600, c:'fash', ess:false, ro:false},
+  {n:'Curea piele', p:120, c:'fash', ess:false, ro:false},
+  {n:'Ochelari de soare', p:200, c:'fash', ess:false, ro:false},
+
+  // ===== RESTAURANT =====
+  {n:'Pizza restaurant medie', p:45, c:'rest', ess:false, ro:true},
+  {n:'Pizza restaurant mare', p:65, c:'rest', ess:false, ro:true},
+  {n:'Paste restaurant', p:40, c:'rest', ess:false, ro:true},
+  {n:'Friptură restaurant', p:80, c:'rest', ess:false, ro:true},
+  {n:'Salată restaurant', p:30, c:'rest', ess:false, ro:true},
+  {n:'Burger restaurant', p:50, c:'rest', ess:false, ro:true},
+  {n:'Sushi restaurant', p:120, c:'rest', ess:false, ro:false},
+  {n:'Brunch', p:55, c:'rest', ess:false, ro:false},
+  {n:'Cină 2 persoane', p:180, c:'rest', ess:false, ro:true},
+  {n:'Pizza Hut familie', p:120, c:'rest', ess:false, ro:false},
+
+  // ===== FARMACIE =====
+  {n:'Paracetamol', p:15, c:'farma', ess:true, ro:true},
+  {n:'Algocalmin', p:12, c:'farma', ess:true, ro:true},
+  {n:'Nurofen', p:25, c:'farma', ess:true, ro:false},
+  {n:'Vitamina D3', p:35, c:'farma', ess:true, ro:false},
+  {n:'Vitamina C', p:30, c:'farma', ess:true, ro:false},
+  {n:'Magneziu', p:40, c:'farma', ess:true, ro:false},
+  {n:'Sirop tuse', p:30, c:'farma', ess:true, ro:true},
+  {n:'Plasturi', p:15, c:'farma', ess:true, ro:false},
+  {n:'Dezinfectant', p:20, c:'farma', ess:true, ro:false},
+  {n:'Pasta de dinți', p:15, c:'farma', ess:true, ro:false},
+  {n:'Șampon', p:25, c:'farma', ess:true, ro:false},
+
+  // ===== BRICOLAJ =====
+  {n:'Dedeman bec LED', p:25, c:'bric', ess:true, ro:true},
+  {n:'Set șurubelnițe', p:80, c:'bric', ess:true, ro:false},
+  {n:'Ciocan', p:45, c:'bric', ess:true, ro:false},
+  {n:'Vopsea 5L', p:120, c:'bric', ess:true, ro:false},
+  {n:'Sac ciment', p:25, c:'bric', ess:true, ro:true},
+  {n:'Cutie șuruburi', p:30, c:'bric', ess:true, ro:false},
+  {n:'Mănuși de lucru', p:20, c:'bric', ess:true, ro:false},
+  {n:'Mașină de găurit', p:250, c:'bric', ess:true, ro:false},
+  {n:'Plante decorative', p:50, c:'bric', ess:false, ro:false},
+
+  // ===== ALTELE =====
+  {n:'Cadou', p:150, c:'alte', ess:false, ro:false},
+  {n:'Flori', p:60, c:'alte', ess:false, ro:false},
+  {n:'Carte', p:50, c:'alte', ess:false, ro:false},
+  {n:'Reparație telefon', p:200, c:'alte', ess:true, ro:false},
+  {n:'Frizerie bărbați', p:50, c:'alte', ess:true, ro:true},
+  {n:'Salon păr femei', p:120, c:'alte', ess:true, ro:true},
+  {n:'Manichiură', p:80, c:'alte', ess:false, ro:true},
+  {n:'Masaj 1h', p:150, c:'alte', ess:false, ro:true},
+  {n:'Reparație auto', p:300, c:'alte', ess:true, ro:true},
+  {n:'Asigurare RCA', p:600, c:'alte', ess:true, ro:false},
+  {n:'ITP', p:90, c:'alte', ess:true, ro:false},
+  {n:'Donație', p:50, c:'alte', ess:true, ro:false}
+];
+
+// ============================================================
+// ABO PRESETS
+// ============================================================
+var ABO_PRESETS = [
+  {name:'Netflix', price:55, letter:'N'},
+  {name:'Spotify', price:25, letter:'S'},
+  {name:'Disney+', price:45, letter:'D'},
+  {name:'HBO Max', price:40, letter:'H'},
+  {name:'YouTube Premium', price:34, letter:'Y'},
+  {name:'Apple Music', price:30, letter:'A'},
+  {name:'iCloud', price:15, letter:'i'},
+  {name:'ChatGPT Plus', price:100, letter:'C'},
+  {name:'Internet', price:65, letter:'I'},
+  {name:'Telefon', price:45, letter:'T'},
+  {name:'Sală', price:120, letter:'S'},
+  {name:'Curent', price:200, letter:'E'}
+];
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+var LEADERBOARD = [
+  {name:'Andrei M.',    city:'București',  streak:34, xp:2840},
+  {name:'Ioana P.',     city:'Cluj-Napoca', streak:28, xp:2620},
+  {name:'Răzvan D.',    city:'Timișoara',   streak:25, xp:2410},
+  {name:'Maria S.',     city:'Iași',        streak:22, xp:2180},
+  {name:'Cristian B.',  city:'Brașov',      streak:19, xp:1950},
+  {name:'Diana V.',     city:'Constanța',   streak:17, xp:1820},
+  {name:'Vlad I.',      city:'Sibiu',       streak:15, xp:1650},
+  {name:'Alexandra T.', city:'Oradea',      streak:13, xp:1480}
+];
+
+// ============================================================
+// QUIZ DATA
+// ============================================================
+var QUIZ_RO = [
+  {q:'Cât din venit ar trebui să economisești ideal?', o:['5%','10%','20%','50%'], a:2},
+  {q:'Ce este un fond de urgență?', o:['Bani pentru distracție','3-6 luni cheltuieli puse deoparte','Investiție în acțiuni','Credit la bancă'], a:1},
+  {q:'Regula 50/30/20 împarte venitul în:', o:['Nevoi/Dorințe/Economii','Mâncare/Casă/Auto','Acțiuni/Obligațiuni/Cash','Salariu/Bonus/Pensie'], a:0},
+  {q:'Ce dobândă e bună la un depozit?', o:['1%','3%','peste 6%','15%'], a:2},
+  {q:'Ce este inflația?', o:['Creșterea salariilor','Scăderea puterii de cumpărare','Creșterea acțiunilor','Reducerea taxelor'], a:1},
+  {q:'Cum se numește venitul fără să muncești activ?', o:['Activ','Pasiv','Bonus','Cadou'], a:1},
+  {q:'Cea mai sigură investiție pe termen lung?', o:['Crypto','Acțiuni individuale','ETF-uri diversificate','Loterie'], a:2},
+  {q:'Ce e mai prost financiar?', o:['Credit pentru casă','Credit pentru telefon','Credit pentru educație','Credit auto dobândă mică'], a:1},
+  {q:'Diversificare înseamnă:', o:['Bani la o singură bancă','Ouăle în mai multe coșuri','Doar Apple','Niciodată'], a:1},
+  {q:'Cel mai bun moment să economisești?', o:['La 40 de ani','Când ai milion','Acum','Niciodată'], a:2}
+];
+var QUIZ_EN = [
+  {q:'How much should you save?', o:['5%','10%','20%','50%'], a:2},
+  {q:'What is an emergency fund?', o:['Fun money','3-6 months expenses','Stocks','Bank loan'], a:1},
+  {q:'50/30/20 rule splits income into:', o:['Needs/Wants/Savings','Food/Home/Auto','Stocks/Bonds/Cash','Salary/Bonus/Pension'], a:0},
+  {q:'Good deposit interest rate?', o:['1%','3%','over 6%','15%'], a:2},
+  {q:'What is inflation?', o:['Rising salaries','Falling purchasing power','Rising stocks','Tax cuts'], a:1},
+  {q:'Income without active work?', o:['Active','Passive','Bonus','Gift'], a:1},
+  {q:'Safest long-term investment?', o:['Crypto','Single stocks','Diversified ETFs','Lottery'], a:2},
+  {q:'Worst financially?', o:['Home loan','Phone loan','Education loan','Low-rate car loan'], a:1},
+  {q:'Diversification means:', o:['One bank','Many baskets','Only Apple','Not investing'], a:1},
+  {q:'Best time to save?', o:['At 40','When rich','Now','Never'], a:2}
+];
+function getQuizQs(){
+  var src = LANG==='en' ? QUIZ_EN : QUIZ_RO;
+  return src.slice().sort(function(){return Math.random()-0.5;}).slice(0,10);
+}
+
+var BRAND_ORIGINS = [
+  {name:'Dacia', local:true}, {name:'Banca Transilvania', local:true},
+  {name:'Borsec', local:true}, {name:'eMAG', local:true},
+  {name:'Dedeman', local:true}, {name:'Profi', local:true},
+  {name:'Bitdefender', local:true}, {name:'UiPath', local:true},
+  {name:'Rompetrol', local:true}, {name:'Petrom', local:true},
+  {name:'Tesla', local:false}, {name:'Apple', local:false},
+  {name:'Lidl', local:false}, {name:'Kaufland', local:false},
+  {name:'Nike', local:false}, {name:'Samsung', local:false},
+  {name:'Carrefour', local:false}, {name:'IKEA', local:false}
+];
+
+// ============================================================
+// SLIDER DRAG STATE
+// ============================================================
+var SLIDER_DRAG = false;
+// ============================================================
+// APPLY LANGUAGE
+// ============================================================
+function applyLang(){
+  T = LANGS[LANG];
+  document.documentElement.lang = T.code;
+
+  // Welcome
+  setHTML('wl-title', LANG==='en' ? 'How long<br>until you are<br><em>free?</em>' : 'Cât durează<br>până ești<br><em>liber?</em>');
+  setText('wl-stat-l', T.welcomeStat);
+  setHTML('wl-body', LANG==='en'
+    ? 'Not because they can\'t.<br>Because <strong>nobody showed them how.</strong><br><br>Enter your real numbers and see in exactly how many days you reach your dream.'
+    : 'Nu pentru că nu pot.<br>Pentru că <strong>nimeni nu le-a arătat cum.</strong><br><br>Introdu situația ta reală și vei vedea exact în câte zile ajungi la visul tău.');
+  setText('btn-start-l', T.btnStart);
+
+  // Setup
+  setText('setup-back-l', T.setupBack);
+  setHTML('step1-q', T.step1Q[0]+'<br>'+T.step1Q[1]+'<em>'+T.step1Q[2]+'</em>');
+  setText('step1-h', T.step1H);
+  setText('step1-next', T.stepNext);
+  setHTML('step2-q', T.step2Q[0]+'<br><em>'+T.step2Q[1]+'</em>'+T.step2Q[2]);
+  setText('step2-h', T.step2H);
+  setText('step2-next', T.stepNext);
+  setHTML('step3-q', T.step3Q[0]+'<br><em>'+T.step3Q[1]+'</em>'+T.step3Q[2]);
+  setText('step3-h', T.step3H);
+  setText('step3-next', T.calc);
+  var nm=$('inp-name'); if(nm) nm.placeholder = T.namePh;
+
+  // Home
+  setText('h-edit-l', T.hEdit);
+  setText('h-patriot-l', T.hPatriotL);
+  setText('h-patriot-u', T.hPatriotU);
+  setText('hh-circle-u', T.hhCircleU);
+  setText('hh-sub-pref', T.hhSubPref);
+  setText('sum-l-spent', T.sumLSpent);
+  setText('sum-l-budget', T.sumLBudget);
+  setText('sum-l-added', T.sumLAdded);
+  setText('sum-spent-c', T.sym);
+  setText('sum-budget-c', T.sym);
+  setText('sum-added-c', T.sumZile);
+  setText('cd-l', T.cdL);
+  setText('sv-title', T.svTitle);
+  setText('sv-foot-l1', T.svFootL1);
+  setText('sv-foot-l2', T.svFootL2);
+  setText('sv-mon-c', T.svMonC);
+  setText('sv-rem-c', T.svRemC);
+  setText('sm-sec-t', T.smSecT);
+  setText('sm-l-net', T.smLNet);
+  setText('sm-l-sav', T.smLSav);
+  setText('sm-l-abo', T.smLAbo);
+  setText('sm-l-safe', T.smLSafe);
+  setText('sm-net-c', T.sym);
+  setText('sm-sav-c', T.sym);
+  setText('sm-abo-c', T.sym);
+  setText('sm-safe-c', T.sym);
+  setText('btn-safe-l', T.btnSafeL);
+
+  // Shop
+  setText('sh-greet', T.shGreet);
+  setText('sh-title', T.shTitle);
+  setText('sh-manual-t', T.shManualT);
+  var s1=$('sh-search-inp'); if(s1) s1.placeholder = T.shSearch;
+  var c1=$('c-name'); if(c1) c1.placeholder = T.cNamePh;
+
+  // Grafic
+  setText('gr-back-l', T.grBackL);
+  var gn=$('grafic-obj-name'); if(gn) gn.placeholder = T.grNamePh;
+  setText('gr-add-photo-t', T.grAddT);
+  setText('gr-add-photo-s', T.grAddS);
+  setText('gr-bd-l', T.grBdL);
+  setText('gr-bd-u', T.grBdU);
+  setText('gr-st-rem-l', T.grStRem);
+  setText('gr-st-mon-l', T.grStMon);
+  setText('gr-st-day-l', T.grStDay);
+  setText('gr-cur', T.sym);
+
+  // Calendar
+  setText('cal-greet', T.calGreet);
+  setText('cal-title', T.calTitle);
+
+  // Abo
+  setText('abo-greet', T.aboGreet);
+  setText('abo-title', T.aboTitle);
+  setText('abo-tot-l-total', T.aboTotLTotal);
+  setText('abo-tot-l-paid', T.aboTotLPaid);
+  setText('abo-tot-l-rem', T.aboTotLRem);
+  setText('abo-add-l', T.aboAddL);
+  setText('abo-unp-t', T.aboUnpT);
+  setText('abo-pd-t', T.aboPdT);
+  setText('abo-yr-t', T.aboYrT);
+  setText('abo-yr-l1', T.aboYrL1);
+  setText('abo-yr-l2', T.aboYrL2);
+  setText('abo-yr-l3', T.aboYrL3);
+
+  // Quiz
+  setText('qz-greet', T.qzGreet);
+  setText('qz-title', T.qzTitle);
+  setText('streak-lbl', T.streakLbl);
+  setText('g-quiz-n', T.gQuizN);
+  setText('g-quiz-s', T.gQuizS);
+  setText('g-pret-n', T.gPretN);
+  setText('g-pret-s', T.gPretS);
+  setText('g-rom-n', T.gRomN);
+  setText('g-rom-s', T.gRomS);
+  setText('g-calc-n', T.gCalcN);
+  setText('g-calc-s', T.gCalcS);
+  setText('prize-tag', T.prizeTag);
+  setHTML('prize-title', T.prizeTitle[0]+' <em>'+T.prizeTitle[1]+'</em>');
+  setText('prize-sub', T.prizeSub);
+  setText('prize-foot-l', T.prizeFoot);
+  setText('lb-sec-t', T.lbSecT);
+  setText('lb-month', T.lbMonth);
+
+  // Tabs
+  setText('tb-home', T.tbHome);
+  setText('tb-grafic', T.tbGrafic);
+  setText('tb-cal', T.tbCal);
+  setText('tb-shop', T.tbShop);
+  setText('tb-quiz', T.tbQuiz);
+  setText('tb-abo', T.tbAbo);
+
+  // Modals
+  setText('lm-t', T.lmT);
+  setText('lm-s', T.lmS);
+  setText('lm-close', T.lmClose);
+  setText('sf-t', T.sfT);
+  setText('sf-s', T.sfS);
+  setText('sf-bal-l', T.sfBalL);
+  setText('sf-bal-c', T.sfBalC || T.sym);
+  setText('sf-dep', T.sfDep);
+  setText('sf-wit', T.sfWit);
+  setText('sf-close', T.sfClose);
+  setText('aa-t', T.aaT);
+  setText('aa-s', T.aaS);
+  setText('aa-l-n', T.aaLN);
+  setText('aa-l-p', T.aaLP);
+  setText('aa-cancel', T.aaCancel);
+  setText('aa-confirm', T.aaConfirm);
+  setText('qz-close', T.qzClose);
+
+  setText('lang-flag', T.flag);
+}
+
+// ============================================================
+// LANG MODAL
+// ============================================================
+function openLangModal(){
+  var list=$('lang-list');
+  if(list){
+    list.innerHTML='';
+    Object.keys(LANGS).forEach(function(k){
+      var L=LANGS[k];
+      var el=document.createElement('div');
+      el.className='lang-item'+(k===LANG?' sel':'');
+      el.innerHTML='<div class="lang-code">'+L.flag+'</div>'+
+        '<div class="lang-mid"><div class="lang-n">'+(k==='ro'?'Română':'English')+'</div>'+
+        '<div class="lang-cur">'+L.cur+' • '+L.sym+'</div></div>';
+      el.onclick=function(){ setLang(k); };
+      list.appendChild(el);
+    });
+  }
+  $('lang-modal').classList.add('open');
+}
+function closeLangModal(){ $('lang-modal').classList.remove('open'); }
+function setLang(code){
+  if(!LANGS[code]) return;
+  LANG=code; S.lang=code; sv();
+  applyLang(); updateAll(); closeLangModal();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+var SCREEN_TAB = {home:'tab-home',grafic:'tab-grafic',cal:'tab-cal',shop:'tab-shop',quiz:'tab-quiz',abo:'tab-abo'};
+
+function goTo(name){
+  // Remove onboarding mode - we're in the app proper
+  document.body.classList.remove('onboarding');
+  var screens = document.querySelectorAll('.sc');
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove('act');
+  var t=$('sc-'+name); if(t) t.classList.add('act');
+  var sc=$('scroll'); if(sc) sc.scrollTop=0;
+  var tabs=document.querySelectorAll('#tabbar .tab');
+  for(var j=0;j<tabs.length;j++) tabs[j].classList.remove('act');
+  var tabId=SCREEN_TAB[name];
+  if(tabId){ var tb=$(tabId); if(tb) tb.classList.add('act'); }
+  var bar=$('tabbar');
+  if(bar) bar.style.display = (name==='welcome'||name==='setup')?'none':'flex';
+  if(name==='home') buildHome();
+  if(name==='grafic') buildGrafic();
+  if(name==='shop'){ buildShopCats(); buildShopList(); }
+  if(name==='abo'){ buildAboList(); buildAboTotals(); }
+  if(name==='cal') buildCalendar();
+  if(name==='quiz'){ buildStreakXP(); buildLeaderboard(); }
+}
+
+function goSetup(){
+  document.body.classList.add('onboarding');
+  var screens=document.querySelectorAll('.sc');
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove('act');
+  $('sc-setup').classList.add('act');
+  $('tabbar').style.display='none';
+  if(S.income>0) $('inp-inc').value = S.income;
+  if(S.goal>0) $('inp-goal').value = S.goal;
+  if(S.name) $('inp-name').value = S.name;
+  showSetupStep(1, true);
+}
+
+function showSetupStep(n, immediate){
+  var current = S.setupStep || 1;
+  S.setupStep = n;
+  for(var k=1;k<=3;k++){
+    var d=$('sd-'+k);
+    if(d) d.classList.toggle('act', k<=n);
+  }
+  var bk=$('setup-back');
+  if(bk) bk.style.visibility = (n===1 && !S.setupDone) ? 'hidden' : 'visible';
+
+  if(immediate){
+    var steps=document.querySelectorAll('.setup-step');
+    for(var i=0;i<steps.length;i++){ steps[i].classList.remove('act','exiting'); }
+    $('step-'+n).classList.add('act');
+    setTimeout(function(){
+      var inp = $('step-'+n).querySelector('input');
+      if(inp) inp.focus();
+    }, 100);
+    return;
+  }
+
+  var oldEl = $('step-'+current);
+  var newEl = $('step-'+n);
+  if(oldEl===newEl) return;
+  oldEl.classList.add('exiting');
+  setTimeout(function(){
+    oldEl.classList.remove('act','exiting');
+    newEl.classList.add('act');
+    setTimeout(function(){
+      var inp = newEl.querySelector('input');
+      if(inp) inp.focus();
+    }, 100);
+  }, 320);
+}
+
+function setupBack(){
+  if(S.setupStep>1){
+    showSetupStep(S.setupStep-1);
+  } else {
+    if(S.setupDone) goTo('home');
+    else {
+      document.body.classList.add('onboarding');
+      var screens=document.querySelectorAll('.sc');
+      for(var i=0;i<screens.length;i++) screens[i].classList.remove('act');
+      $('sc-welcome').classList.add('act');
+      $('tabbar').style.display='none';
+    }
+  }
+}
+
+function setupNext(step){
+  if(step===1){
+    var v=parseFloat($('inp-inc').value);
+    if(!v || v<=0){ notify(LANG==='en'?'Enter a valid amount':'Introdu o sumă validă'); return; }
+    showSetupStep(2);
+  } else if(step===2){
+    var g=parseFloat($('inp-goal').value);
+    if(!g || g<=0){ notify(LANG==='en'?'Enter a valid amount':'Introdu o sumă validă'); return; }
+    showSetupStep(3);
+  }
+}
+
+function setQuick(id,val){
+  var el=$(id); if(el) el.value=val;
+  var chips = el.parentNode.querySelectorAll('.setup-chip');
+  for(var i=0;i<chips.length;i++){
+    chips[i].classList.toggle('sel', parseFloat(chips[i].textContent.replace(/\./g,''))===val);
+  }
+}
+
+function finishSetup(){
+  var inc=parseFloat($('inp-inc').value);
+  var goal=parseFloat($('inp-goal').value);
+  var name=($('inp-name').value||'').trim();
+  if(!inc||inc<=0||!goal||goal<=0){
+    notify(LANG==='en'?'Fill all fields':'Completează toate câmpurile'); return;
+  }
+  S.income=inc; S.goal=goal; S.name=name||'—';
+  S.setupDone=true;
+  if(!S.startDate) S.startDate=todayStr();
+  sv();
+  applyLang();
+  updateAll();
+  goTo('home');
+  notify(LANG==='en'?'Welcome aboard':'Bun venit!');
+}
+
+// ============================================================
+// CALCS
+// ============================================================
+function aboMonthlyTotal(){
+  var s=0; for(var i=0;i<S.abos.length;i++) s+=Number(S.abos[i].price)||0; return s;
+}
+function todaySpent(){
+  var t=todayStr(), arr=S.history[t]||[];
+  var s=0; for(var i=0;i<arr.length;i++) s+=arr[i].price||0; return s;
+}
+function netIncome(){ return Math.max(0, S.income - aboMonthlyTotal()); }
+function savingsPerMonth(){ return Math.round(netIncome() * (S.savingsPct/100)); }
+function remainingPerMonth(){ return netIncome() - savingsPerMonth(); }
+function daysToGoal(){
+  var rem = Math.max(0, S.goal - S.safe);
+  if(rem===0) return 0;
+  var savedPerDay = savingsPerMonth()/30;
+  if(savedPerDay<=0) return -1;
+  return Math.ceil(rem/savedPerDay);
+}
+function todayDiff(){
+  // 1 day = today's budget portion
+  return Math.round(remainingPerMonth()/30);
+}
+function daysAdded(){
+  // how many extra "days saved" the user gained by underspending
+  var diff = todayDiff() - todaySpent();
+  if(diff<=0) return 0;
+  var savedPerDay = savingsPerMonth()/30;
+  if(savedPerDay<=0) return 0;
+  return +(diff/savedPerDay).toFixed(1);
+}
+
+// ============================================================
+// HOME
+// ============================================================
+function buildHome(){
+  // Big circle: days to goal
+  var days = daysToGoal();
+  setText('hh-circle-n', days<0 ? '—' : days);
+  setText('hh-sub-target', fmtK(S.goal)+' '+T.sym);
+
+  // Patriot/XP bar
+  var xp = S.xp||0;
+  var xpMax = 1000;
+  var pct = Math.min(100, (xp/xpMax)*100);
+  $('h-patriot-bar-f').style.width = pct+'%';
+  setText('h-patriot-v', xp);
+
+  // Summary card 1
+  var spent = todaySpent();
+  var budget = todayDiff();
+  setText('sum-spent', fmt(spent));
+  setText('sum-budget', fmt(budget));
+  setText('sum-added', daysAdded());
+
+  // Savings slider card
+  setText('sv-pct-v', S.savingsPct);
+  positionSlider(S.savingsPct);
+  setText('sv-mon', fmt(savingsPerMonth()));
+  setText('sv-rem', fmt(remainingPerMonth()));
+
+  // Summary card 2
+  setText('sm-net', fmt(netIncome()));
+  setText('sm-sav', fmt(savingsPerMonth()));
+  setText('sm-abo', fmt(aboMonthlyTotal()));
+  setText('sm-safe', fmt(S.safe));
+
+  // Countdown updates via tick
+  tickCountdown();
+}
+
+// ============================================================
+// COUNTDOWN TIMER (until midnight)
+// ============================================================
+var COUNTDOWN_INT = null;
+function tickCountdown(){
+  var now = new Date();
+  var end = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0);
+  var diff = Math.max(0, Math.floor((end-now)/1000));
+  var h = Math.floor(diff/3600);
+  var m = Math.floor((diff%3600)/60);
+  var s = diff%60;
+  var pad = function(n){ return n<10 ? '0'+n : ''+n; };
+  setText('cd-v', pad(h)+':'+pad(m)+':'+pad(s));
+}
+function startCountdown(){
+  if(COUNTDOWN_INT) clearInterval(COUNTDOWN_INT);
+  tickCountdown();
+  COUNTDOWN_INT = setInterval(tickCountdown, 1000);
+}
+
+// ============================================================
+// SAVINGS SLIDER
+// ============================================================
+function positionSlider(pct){
+  var wrap = $('sv-slider-wrap'); if(!wrap) return;
+  var thumb = $('sv-thumb');
+  var fill = $('sv-fill');
+  if(thumb) thumb.style.left = pct+'%';
+  if(fill) fill.style.width = pct+'%';
+}
+function bindSlider(){
+  var wrap = $('sv-slider-wrap');
+  var thumb = $('sv-thumb');
+  if(!wrap || !thumb) return;
+
+  function setFromX(clientX){
+    var rect = wrap.getBoundingClientRect();
+    var x = clientX - rect.left;
+    var pct = Math.round((x/rect.width)*100);
+    pct = Math.max(0, Math.min(100, pct));
+    S.savingsPct = pct;
+    setText('sv-pct-v', pct);
+    positionSlider(pct);
+    setText('sv-mon', fmt(savingsPerMonth()));
+    setText('sv-rem', fmt(remainingPerMonth()));
+    // also update days circle
+    var d = daysToGoal();
+    setText('hh-circle-n', d<0 ? '—' : d);
+  }
+
+  function onMove(e){
+    if(!SLIDER_DRAG) return;
+    e.preventDefault();
+    var x = e.touches ? e.touches[0].clientX : e.clientX;
+    setFromX(x);
+  }
+  function onUp(){
+    if(!SLIDER_DRAG) return;
+    SLIDER_DRAG = false;
+    sv();
+    // final update
+    var d = daysToGoal();
+    setText('hh-circle-n', d<0 ? '—' : d);
+  }
+  function onDown(e){
+    SLIDER_DRAG = true;
+    var x = e.touches ? e.touches[0].clientX : e.clientX;
+    setFromX(x);
+    e.preventDefault();
+  }
+
+  // Tap on track
+  wrap.addEventListener('mousedown', onDown);
+  wrap.addEventListener('touchstart', onDown, {passive:false});
+  // Move/up listeners on document
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+  document.addEventListener('touchmove', onMove, {passive:false});
+  document.addEventListener('touchend', onUp);
+  document.addEventListener('touchcancel', onUp);
+}
+// ============================================================
+// SHOP — vertical product list with -/0/+ controls
+// ============================================================
+function buildShopCats(){
+  var host = $('sh-tabs'); if(!host) return;
+  host.innerHTML = '';
+  for(var i=0;i<CATEGORIES.length;i++){
+    var c = CATEGORIES[i];
+    var btn = document.createElement('button');
+    btn.className = 'sh-tab' + (c.id===S.curCat ? ' act' : '');
+    btn.textContent = LANG==='en' ? c.name_en : c.name_ro;
+    btn.onclick = (function(id){ return function(){
+      S.curCat = id; sv();
+      buildShopCats();
+      buildShopList();
+    }; })(c.id);
+    host.appendChild(btn);
+  }
+}
+
+function getTodayQtyFor(productName){
+  var t = todayStr();
+  var arr = S.history[t] || [];
+  var q = 0;
+  for(var i=0;i<arr.length;i++){
+    if(arr[i].name === productName) q += (arr[i].qty || 1);
+  }
+  return q;
+}
+
+function buildShopList(){
+  var host = $('sh-list-wrap'); if(!host) return;
+  host.innerHTML = '';
+  var q = ($('sh-search-inp').value || '').trim().toLowerCase();
+
+  var items = CATALOG.filter(function(p){ return p.c === S.curCat; });
+  if(q){
+    items = items.filter(function(p){ return p.n.toLowerCase().indexOf(q) >= 0; });
+  }
+
+  // Split into ro / non-ro
+  var roItems = items.filter(function(p){ return p.ro; });
+  var nonRoItems = items.filter(function(p){ return !p.ro; });
+
+  function makeList(list, title){
+    if(list.length === 0) return;
+    var grp = document.createElement('div');
+    grp.className = 'sh-grp';
+    grp.textContent = title;
+    host.appendChild(grp);
+
+    var wrap = document.createElement('div');
+    wrap.className = 'sh-list';
+    for(var i=0;i<list.length;i++){
+      var p = list[i];
+      var qty = getTodayQtyFor(p.n);
+      var row = document.createElement('div');
+      row.className = 'sh-row';
+      var xpTxt = p.ess ? '+7' : '-7';
+      var essCls = p.ess ? 'ess' : 'lux';
+      var essLbl = p.ess ? 'ESS' : 'NON';
+      row.innerHTML =
+        '<div class="sh-row-mid">'+
+          '<div class="sh-row-n">'+escapeHTML(p.n)+'</div>'+
+          '<div class="sh-row-meta">'+
+            '<span class="sh-row-pr">'+fmt(p.p)+'</span>'+
+            '<span class="sh-row-unit">'+T.rowUnit+'</span>'+
+            '<span class="sh-row-tag '+essCls+'">'+essLbl+'</span>'+
+            '<span class="sh-row-xp">'+xpTxt+'</span>'+
+          '</div>'+
+        '</div>'+
+        '<div class="sh-row-ctrl">'+
+          '<button class="sh-row-btn minus" data-n="'+escapeHTML(p.n)+'" aria-label="Minus">'+
+            '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>'+
+          '</button>'+
+          '<div class="sh-row-qty mono">'+qty+'</div>'+
+          '<button class="sh-row-btn plus" data-n="'+escapeHTML(p.n)+'" aria-label="Plus">'+
+            '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'+
+          '</button>'+
+        '</div>';
+      wrap.appendChild(row);
+    }
+    host.appendChild(wrap);
+  }
+
+  if(S.curCat === 'fast' || S.curCat === 'super' || S.curCat === 'cafe' || S.curCat === 'rest' || S.curCat === 'benz' || S.curCat === 'trans' || S.curCat === 'distr' || S.curCat === 'fash' || S.curCat === 'farma' || S.curCat === 'bric' || S.curCat === 'alte' || S.curCat === 'ali'){
+    makeList(roItems, T.shGrpRo);
+    makeList(nonRoItems, T.shGrpInt);
+  } else {
+    makeList(items.slice(), '');
+  }
+
+  // Wire plus/minus buttons
+  var pluses = host.querySelectorAll('.sh-row-btn.plus');
+  for(var i=0;i<pluses.length;i++){
+    pluses[i].onclick = function(){
+      var name = this.getAttribute('data-n');
+      addProductByName(name, +1);
+    };
+  }
+  var minuses = host.querySelectorAll('.sh-row-btn.minus');
+  for(var j=0;j<minuses.length;j++){
+    minuses[j].onclick = function(){
+      var name = this.getAttribute('data-n');
+      addProductByName(name, -1);
+    };
+  }
+}
+
+function addProductByName(name, delta){
+  var prod = null;
+  for(var i=0;i<CATALOG.length;i++){
+    if(CATALOG[i].n === name){ prod = CATALOG[i]; break; }
+  }
+  if(!prod) return;
+  var t = todayStr();
+  if(!S.history[t]) S.history[t] = [];
+
+  if(delta > 0){
+    var xpDelta = prod.ess ? 7 : -7;
+    S.history[t].push({
+      name: prod.n, price: prod.p, qty:1, time:(new Date()).toTimeString().slice(0,5),
+      kind:'shop', cat:prod.c, ess:!!prod.ess, xp:xpDelta
+    });
+    S.xp = Math.max(0, (S.xp||0) + xpDelta);
+    sv();
+    var qty = getTodayQtyFor(prod.n);
+    var btn = document.querySelector('.sh-row-btn.plus[data-n="'+CSS.escape(name)+'"]');
+    if(btn){ var qel = btn.parentNode.querySelector('.sh-row-qty'); if(qel) qel.textContent = qty; }
+    notify((LANG==='en'?'Added':'Adăugat')+' '+prod.n+' • '+(xpDelta>0?'+':'')+xpDelta+' XP');
+  } else {
+    // remove last instance
+    var idx = -1;
+    for(var k=S.history[t].length-1;k>=0;k--){
+      if(S.history[t][k].name === prod.n){ idx = k; break; }
+    }
+    if(idx < 0){ notify(LANG==='en'?'Nothing to remove':'Nimic de șters'); return; }
+    var rem = S.history[t][idx];
+    if(rem.xp) S.xp = Math.max(0, (S.xp||0) - rem.xp);
+    S.history[t].splice(idx,1);
+    sv();
+    var qty2 = getTodayQtyFor(prod.n);
+    var btn2 = document.querySelector('.sh-row-btn.plus[data-n="'+CSS.escape(name)+'"]');
+    if(btn2){ var qel2 = btn2.parentNode.querySelector('.sh-row-qty'); if(qel2) qel2.textContent = qty2; }
+    notify(LANG==='en'?'Removed':'Șters');
+  }
+}
+
+function filterShop(){ buildShopList(); }
+
+function addCustom(){
+  var n=($('c-name').value||'').trim();
+  var p=parseFloat($('c-price').value);
+  if(!n||!p||p<=0){ notify(LANG==='en'?'Name and price required':'Nume și preț necesare'); return; }
+  var t=todayStr();
+  if(!S.history[t]) S.history[t]=[];
+  S.history[t].push({name:n,price:p,qty:1,time:(new Date()).toTimeString().slice(0,5),kind:'manual'});
+  $('c-name').value=''; $('c-price').value='';
+  sv(); updateAll();
+  notify((LANG==='en'?'Added':'Adăugat')+' • '+fmt(p)+' '+T.sym);
+}
+
+function resetToday(){
+  var t=todayStr();
+  if(!S.history[t] || S.history[t].length===0){
+    notify(LANG==='en'?'Nothing to reset':'Nimic de resetat'); return;
+  }
+  var arr=S.history[t];
+  for(var i=0;i<arr.length;i++) if(arr[i].xp) S.xp = Math.max(0, (S.xp||0) - arr[i].xp);
+  delete S.history[t];
+  sv(); updateAll();
+  notify(LANG==='en'?'Day reset':'Zi resetată');
+}
+
+// ============================================================
+// GRAFIC — full screen photo with proper layering
+// ============================================================
+function buildGrafic(){
+  var stage = $('gr-stage');
+  var photo = $('gr-photo');
+  var addBtn = $('gr-add-photo');
+  var clearBtn = $('gr-clear-btn');
+  var caption = $('gr-caption');
+
+  var nameInp=$('grafic-obj-name');
+  if(nameInp && document.activeElement!==nameInp) nameInp.value = S.goalName||'';
+
+  if(S.goalImg){
+    photo.classList.remove('empty');
+    photo.style.backgroundImage = 'url("'+S.goalImg+'")';
+    addBtn.style.display = 'none';
+    clearBtn.style.display = 'flex';
+    if(S.goalName){
+      stage.classList.add('has-name');
+      caption.textContent = S.goalName;
+    } else {
+      stage.classList.remove('has-name');
+    }
+  } else {
+    photo.classList.add('empty');
+    photo.style.backgroundImage = '';
+    addBtn.style.display = 'flex';
+    clearBtn.style.display = 'none';
+    stage.classList.remove('has-name');
+  }
+
+  // Water height = saved percent of goal
+  var pct = S.goal>0 ? Math.min(100,(S.safe/S.goal)*100) : 0;
+  $('gr-water').style.height = pct.toFixed(2)+'%';
+
+  // Days
+  var d = daysToGoal();
+  setText('gr-bd-n', d<0 ? '—' : d);
+  if(d>0){
+    var end=new Date(); end.setDate(end.getDate()+d);
+    setText('gr-bd-d', end.toLocaleDateString(LANG==='en'?'en-US':'ro-RO',{day:'numeric',month:'long',year:'numeric'}));
+  } else if(d===0){
+    setText('gr-bd-d', LANG==='en'?'Goal reached':'Obiectiv atins');
+  } else {
+    setText('gr-bd-d', '—');
+  }
+
+  setText('gr-pct', pct.toFixed(1));
+  setText('gr-saved', fmt(S.safe));
+  setText('gr-target', fmt(S.goal));
+
+  var rem = Math.max(0, S.goal-S.safe);
+  setText('gr-st-rem', fmtK(rem));
+  var sav = savingsPerMonth();
+  var months = (sav>0&&rem>0) ? Math.ceil(rem/sav) : 0;
+  setText('gr-st-mon', months>0 ? months : '—');
+  var perDay = sav>0 ? Math.round(sav/30) : 0;
+  setText('gr-st-day', perDay>0 ? fmt(perDay) : '—');
+}
+
+function onGoalNameChange(){
+  var v=$('grafic-obj-name').value.trim();
+  S.goalName = v; sv();
+  var stage=$('gr-stage');
+  var caption=$('gr-caption');
+  if(S.goalImg && v){
+    stage.classList.add('has-name');
+    caption.textContent = v;
+  } else {
+    stage.classList.remove('has-name');
+  }
+}
+
+function onGoalPhoto(e){
+  var f=e.target.files&&e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    S.goalImg=ev.target.result;
+    sv();
+    buildGrafic();
+    notify(LANG==='en'?'Photo set':'Fotografie setată');
+  };
+  r.readAsDataURL(f);
+}
+function clearGoalPhoto(){
+  S.goalImg=null; sv(); buildGrafic();
+  $('goal-photo-input').value='';
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+var CAL_Y=(new Date()).getFullYear();
+var CAL_M=(new Date()).getMonth();
+var CAL_SEL=null;
+
+function calNav(d){
+  CAL_M+=d;
+  if(CAL_M<0){ CAL_M=11; CAL_Y--; }
+  if(CAL_M>11){ CAL_M=0; CAL_Y++; }
+  buildCalendar();
+}
+
+function buildCalendar(){
+  if(!$('cal-grid')) return;
+  var monthsRO=['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'];
+  var monthsEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  setText('cal-month-name', (LANG==='en'?monthsEN:monthsRO)[CAL_M]+' '+CAL_Y);
+  var grid=$('cal-grid'); grid.innerHTML='';
+  var wd = LANG==='en' ? ['M','T','W','T','F','S','S'] : ['L','Ma','Mi','J','V','S','D'];
+  for(var w=0;w<7;w++){
+    var h=document.createElement('div'); h.className='cal-wd'; h.textContent=wd[w]; grid.appendChild(h);
+  }
+  var first=new Date(CAL_Y,CAL_M,1);
+  var startDay=(first.getDay()+6)%7;
+  var days=new Date(CAL_Y,CAL_M+1,0).getDate();
+  for(var i=0;i<startDay;i++){
+    var e=document.createElement('div'); e.className='cal-cell empty'; grid.appendChild(e);
+  }
+  var ts=todayStr();
+  if(!CAL_SEL) CAL_SEL=ts;
+  for(var d2=1;d2<=days;d2++){
+    var ymd=CAL_Y+'-'+String(CAL_M+1).padStart(2,'0')+'-'+String(d2).padStart(2,'0');
+    var cell=document.createElement('button');
+    cell.className='cal-cell';
+    if(ymd===ts) cell.classList.add('today');
+    if(CAL_SEL===ymd) cell.classList.add('sel');
+    var hist=S.history[ymd];
+    if(hist && hist.length>0){
+      cell.innerHTML='<span>'+d2+'</span><span class="cal-dot"></span>';
+    } else {
+      cell.innerHTML='<span>'+d2+'</span>';
+    }
+    cell.onclick=(function(s){ return function(){ CAL_SEL=s; buildCalendar(); }; })(ymd);
+    grid.appendChild(cell);
+  }
+  buildCalDetail();
+}
+
+function buildCalDetail(){
+  var det=$('cal-detail'); if(!det) return;
+  var ymd=CAL_SEL||todayStr();
+  var hist=S.history[ymd]||[];
+  var d=new Date(ymd);
+  var wdRO=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'];
+  var wdEN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var mRO=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+  var mEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var wd=(LANG==='en'?wdEN:wdRO)[d.getDay()];
+  var mo=(LANG==='en'?mEN:mRO)[d.getMonth()];
+  var head='<div style="padding:14px 4px 10px;"><div style="font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-0.015em;">'+wd+'</div><div style="font-size:12px;color:var(--t4);margin-top:3px;">'+d.getDate()+' '+mo+' '+d.getFullYear()+'</div></div>';
+  if(hist.length===0){
+    det.innerHTML=head+'<div style="padding:24px;text-align:center;color:var(--t5);font-size:13px;background:var(--s2);border:1px dashed var(--b1);border-radius:var(--r-md);">'+(LANG==='en'?'No spending':'Nicio cheltuială')+'</div>';
+    return;
+  }
+  var total=0; for(var i=0;i<hist.length;i++) total+=hist[i].price||0;
+  var rows='';
+  for(var j=0;j<hist.length;j++){
+    var h=hist[j];
+    rows+='<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);">'+
+      '<div><div style="font-size:14px;font-weight:600;color:var(--t1);">'+escapeHTML(h.name||'')+'</div>'+
+      '<div style="font-size:11px;color:var(--t4);margin-top:2px;">'+(h.time||'')+'</div></div>'+
+      '<div class="mono" style="font-size:14px;font-weight:700;color:var(--t1);">'+fmt(h.price||0)+'</div></div>';
+  }
+  det.innerHTML=head+
+    '<div style="display:flex;justify-content:space-between;padding:14px 16px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r-md);margin-bottom:8px;">'+
+      '<span style="font-size:11px;color:var(--t4);letter-spacing:0.08em;text-transform:uppercase;font-weight:700;">'+(LANG==='en'?'Day total':'Total ziua')+'</span>'+
+      '<span class="mono" style="font-size:16px;font-weight:700;color:var(--t1);">'+fmt(total)+' '+T.sym+'</span>'+
+    '</div>'+
+    '<div style="display:flex;flex-direction:column;gap:6px;padding-bottom:20px;">'+rows+'</div>';
+}
+
+// ============================================================
+// SAFE
+// ============================================================
+function openSafe(){
+  setText('sf-bal-v', fmt(S.safe));
+  $('safe-input').value='';
+  $('safe-modal').classList.add('open');
+  setTimeout(function(){ var i=$('safe-input'); if(i) i.focus(); }, 350);
+}
+function closeSafe(){ $('safe-modal').classList.remove('open'); }
+function depositSafe(){
+  var v=parseFloat($('safe-input').value);
+  if(!v||v<=0){ notify(LANG==='en'?'Enter amount':'Introdu suma'); return; }
+  S.safe+=v; sv(); updateAll(); closeSafe();
+  notify((LANG==='en'?'Deposited':'Depus')+' '+fmt(v)+' '+T.sym);
+}
+function withdrawSafe(){
+  var v=parseFloat($('safe-input').value);
+  if(!v||v<=0){ notify(LANG==='en'?'Enter amount':'Introdu suma'); return; }
+  if(v>S.safe){ notify(LANG==='en'?'Not enough':'Nu sunt suficienți'); return; }
+  S.safe-=v; sv(); updateAll(); closeSafe();
+  notify((LANG==='en'?'Withdrawn':'Retras')+' '+fmt(v)+' '+T.sym);
+}
+
+// ============================================================
+// ABO
+// ============================================================
+function currentMonthKey(){
+  var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function monthlyResetCheck(){
+  var cur=currentMonthKey();
+  if(S.aboLastMonth!==cur){
+    for(var i=0;i<S.abos.length;i++) S.abos[i].paid=false;
+    S.aboLastMonth=cur; sv();
+  }
+}
+function buildAboList(){
+  var unp=$('abo-unpaid-list'), pd=$('abo-paid-list');
+  if(!unp||!pd) return;
+  unp.innerHTML=''; pd.innerHTML='';
+  var nU=0,nP=0;
+  for(var i=0;i<S.abos.length;i++){
+    var a=S.abos[i];
+    var row=document.createElement('div');
+    row.className='abo-item'+(a.paid?' paid':'');
+    var letter=a.letter||(a.name||'?').charAt(0).toUpperCase();
+    row.innerHTML='<div class="abo-ico"><span>'+letter+'</span></div>'+
+      '<div class="abo-mid"><div class="abo-n">'+escapeHTML(a.name)+'</div><div class="abo-t">'+(LANG==='en'?'monthly':'lunar')+'</div></div>'+
+      '<div class="abo-pr mono">'+fmt(a.price)+'</div>'+
+      '<button class="abo-chk" data-i="'+i+'"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>'+
+      '<button class="abo-del" data-i="'+i+'">&times;</button>';
+    if(a.paid){ pd.appendChild(row); nP++; } else { unp.appendChild(row); nU++; }
+  }
+  setText('abo-unp-c', nU);
+  setText('abo-pd-c', nP);
+  var chks=document.querySelectorAll('.abo-chk');
+  for(var c=0;c<chks.length;c++){
+    chks[c].onclick=function(){ toggleAbo(parseInt(this.getAttribute('data-i'),10)); };
+  }
+  var dls=document.querySelectorAll('.abo-del');
+  for(var d=0;d<dls.length;d++){
+    dls[d].onclick=function(e){ e.stopPropagation(); deleteAbo(parseInt(this.getAttribute('data-i'),10)); };
+  }
+}
+function buildAboTotals(){
+  var total=aboMonthlyTotal();
+  var paid=0, rem=0, max=0, maxN='';
+  for(var i=0;i<S.abos.length;i++){
+    var a=S.abos[i];
+    if(a.paid) paid+=Number(a.price)||0; else rem+=Number(a.price)||0;
+    if((Number(a.price)||0)>max){ max=Number(a.price)||0; maxN=a.name; }
+  }
+  setText('abo-total', fmt(total));
+  setText('abo-paid', fmt(paid));
+  setText('abo-rem', fmt(rem));
+  setText('abo-yr-mon', fmt(total));
+  setText('abo-yr-yr', fmt(total*12));
+  setText('abo-yr-max', max>0 ? maxN+' • '+fmt(max) : '—');
+}
+function toggleAbo(i){
+  if(!S.abos[i]) return;
+  S.abos[i].paid = !S.abos[i].paid;
+  sv(); buildAboList(); buildAboTotals(); buildHome();
+}
+function deleteAbo(i){
+  if(!S.abos[i]) return;
+  S.abos.splice(i,1); sv(); buildAboList(); buildAboTotals(); buildHome();
+  notify(LANG==='en'?'Deleted':'Șters');
+}
+function openAboAdd(){
+  var h=$('abo-presets'); h.innerHTML='';
+  for(var i=0;i<ABO_PRESETS.length;i++){
+    var p=ABO_PRESETS[i];
+    var b=document.createElement('button');
+    b.className='abo-preset';
+    b.setAttribute('data-n',p.name); b.setAttribute('data-p',p.price); b.setAttribute('data-l',p.letter);
+    b.innerHTML='<div class="ap-ico"><span>'+p.letter+'</span></div>'+
+      '<div class="ap-mid"><div class="ap-n">'+escapeHTML(p.name)+'</div><div class="ap-p">'+fmt(p.price)+' '+T.sym+'</div></div>';
+    b.onclick=function(){
+      $('abo-name-inp').value=this.getAttribute('data-n');
+      $('abo-price-inp').value=this.getAttribute('data-p');
+      $('abo-add-modal').setAttribute('data-letter', this.getAttribute('data-l'));
+    };
+    h.appendChild(b);
+  }
+  $('abo-name-inp').value=''; $('abo-price-inp').value='';
+  $('abo-add-modal').classList.add('open');
+}
+function closeAboAdd(){ $('abo-add-modal').classList.remove('open'); }
+function confirmAboAdd(){
+  var n=($('abo-name-inp').value||'').trim();
+  var p=parseFloat($('abo-price-inp').value);
+  if(!n||!p||p<=0){ notify(LANG==='en'?'Name and price required':'Nume și preț necesare'); return; }
+  var l=$('abo-add-modal').getAttribute('data-letter')||n.charAt(0).toUpperCase();
+  S.abos.push({id:uid(),name:n,price:p,letter:l,paid:false});
+  sv(); closeAboAdd(); buildAboList(); buildAboTotals(); buildHome();
+  notify((LANG==='en'?'Added':'Adăugat')+' • '+n);
+}
+
+// ============================================================
+// LEADERBOARD
+// ============================================================
+function buildLeaderboard(){
+  var host=$('lb-list'); if(!host) return;
+  var all = LEADERBOARD.slice();
+  all.push({name:S.name||(LANG==='en'?'You':'Tu'), city:LANG==='en'?'You':'Tu', streak:S.streak||0, xp:S.xp||0, you:true});
+  all.sort(function(a,b){ return (b.streak*10+b.xp)-(a.streak*10+a.xp); });
+  host.innerHTML='';
+  for(var i=0;i<Math.min(10,all.length);i++){
+    var u=all[i];
+    var rank=i+1;
+    var rankCls = rank===1?'r1':rank===2?'r2':rank===3?'r3':'rN';
+    var pts = u.streak*10 + u.xp;
+    var row=document.createElement('div');
+    row.className='lb-row'+(u.you?' you':'');
+    row.innerHTML = '<div class="lb-rank '+rankCls+'">'+rank+'</div>'+
+      '<div class="lb-mid"><div class="lb-n">'+escapeHTML(u.name)+(u.you?' '+(LANG==='en'?'(you)':'(tu)'):'')+'</div>'+
+      '<div class="lb-s">'+escapeHTML(u.city)+' • '+u.streak+' '+(LANG==='en'?'days':'zile')+'</div></div>'+
+      '<div class="lb-pts"><div class="lb-pts-v">'+fmt(pts)+'</div><div class="lb-pts-l">'+(LANG==='en'?'pts':'pts')+'</div></div>';
+    host.appendChild(row);
+  }
+}
+
+// ============================================================
+// GAMES
+// ============================================================
+var CUR_GAME=null, GAME_STATE={};
+
+function startGame(name){
+  CUR_GAME=name; GAME_STATE={};
+  $('quiz-modal').classList.add('open');
+  $('quiz-body').innerHTML='';
+  $('quiz-foot').style.display='none';
+  if(name==='quiz') renderQuiz();
+  else if(name==='pret') renderPret();
+  else if(name==='roman') renderRoman();
+  else if(name==='calc') renderCalc();
+}
+function closeQuiz(){ $('quiz-modal').classList.remove('open'); CUR_GAME=null; }
+
+function renderQuiz(){
+  GAME_STATE.qs=getQuizQs(); GAME_STATE.idx=0; GAME_STATE.score=0;
+  showQuizQ();
+}
+function showQuizQ(){
+  var st=GAME_STATE, body=$('quiz-body');
+  if(st.idx>=st.qs.length){ finishGame('quiz',st.score,st.qs.length); return; }
+  var q=st.qs[st.idx];
+  var html='<div class="qz-prog">'+(st.idx+1)+' / '+st.qs.length+'</div><div class="qz-q">'+escapeHTML(q.q)+'</div><div class="qz-opts">';
+  for(var i=0;i<q.o.length;i++) html+='<button class="qz-opt" data-i="'+i+'">'+escapeHTML(q.o[i])+'</button>';
+  html+='</div>';
+  body.innerHTML=html;
+  var opts=body.querySelectorAll('.qz-opt');
+  for(var k=0;k<opts.length;k++){
+    opts[k].onclick=function(){
+      var pick=parseInt(this.getAttribute('data-i'),10);
+      if(pick===q.a){ this.classList.add('ok'); GAME_STATE.score++; }
+      else { this.classList.add('bad'); opts[q.a].classList.add('ok'); }
+      for(var z=0;z<opts.length;z++) opts[z].disabled=true;
+      setTimeout(function(){ GAME_STATE.idx++; showQuizQ(); }, 700);
+    };
+  }
+}
+
+function renderPret(){
+  var pool=CATALOG.filter(function(p){ return p.p>=50; });
+  if(pool.length<6) pool=CATALOG;
+  var t=pool[Math.floor(Math.random()*pool.length)];
+  var opts=[t.p];
+  while(opts.length<4){
+    var v=Math.round(t.p*(0.5+Math.random()*1.3));
+    if(opts.indexOf(v)<0 && Math.abs(v-t.p)>t.p*0.1) opts.push(v);
+  }
+  opts.sort(function(a,b){ return a-b; });
+  var html='<div class="qz-q">'+(LANG==='en'?'Guess the price':'Ghicește prețul')+'</div>'+
+    '<div class="qz-prod"><div class="qz-prod-ico"><span>'+t.n.charAt(0)+'</span></div>'+
+    '<div class="qz-prod-n">'+escapeHTML(t.n)+'</div></div>'+
+    '<div class="qz-opts">';
+  for(var i=0;i<opts.length;i++) html+='<button class="qz-opt" data-v="'+opts[i]+'">'+fmt(opts[i])+' '+T.sym+'</button>';
+  html+='</div>';
+  $('quiz-body').innerHTML=html;
+  var btns=$('quiz-body').querySelectorAll('.qz-opt');
+  for(var k=0;k<btns.length;k++){
+    btns[k].onclick=function(){
+      var pick=parseInt(this.getAttribute('data-v'),10);
+      var ok=pick===t.p;
+      if(ok) this.classList.add('ok'); else this.classList.add('bad');
+      for(var z=0;z<btns.length;z++){
+        if(parseInt(btns[z].getAttribute('data-v'),10)===t.p) btns[z].classList.add('ok');
+        btns[z].disabled=true;
+      }
+      setTimeout(function(){ finishGame('pret',ok?1:0,1); }, 800);
+    };
+  }
+}
+
+function renderRoman(){
+  GAME_STATE.items=BRAND_ORIGINS.slice().sort(function(){return Math.random()-0.5;}).slice(0,6);
+  GAME_STATE.idx=0; GAME_STATE.score=0;
+  showRomanQ();
+}
+function showRomanQ(){
+  var st=GAME_STATE;
+  if(st.idx>=st.items.length){ finishGame('roman',st.score,st.items.length); return; }
+  var it=st.items[st.idx];
+  var html='<div class="qz-prog">'+(st.idx+1)+' / '+st.items.length+'</div>'+
+    '<div class="qz-q">'+(LANG==='en'?'Is this brand Romanian?':'Acest brand e românesc?')+'</div>'+
+    '<div class="qz-brand">'+escapeHTML(it.name)+'</div>'+
+    '<div class="qz-opts qz-opts-2"><button class="qz-opt" data-v="1">'+(LANG==='en'?'Romanian':'Românesc')+'</button>'+
+    '<button class="qz-opt" data-v="0">'+(LANG==='en'?'Foreign':'Străin')+'</button></div>';
+  $('quiz-body').innerHTML=html;
+  var btns=$('quiz-body').querySelectorAll('.qz-opt');
+  for(var k=0;k<btns.length;k++){
+    btns[k].onclick=function(){
+      var pick=this.getAttribute('data-v')==='1';
+      var ok=pick===it.local;
+      if(ok){ this.classList.add('ok'); GAME_STATE.score++; } else this.classList.add('bad');
+      for(var z=0;z<btns.length;z++) btns[z].disabled=true;
+      setTimeout(function(){ GAME_STATE.idx++; showRomanQ(); }, 600);
+    };
+  }
+}
+
+function renderCalc(){
+  GAME_STATE.idx=0; GAME_STATE.score=0; GAME_STATE.total=6;
+  showCalcQ();
+}
+function showCalcQ(){
+  var st=GAME_STATE;
+  if(st.idx>=st.total){ finishGame('calc',st.score,st.total); return; }
+  var type=Math.floor(Math.random()*3), q, ans;
+  if(type===0){
+    var base=(Math.floor(Math.random()*9)+1)*100;
+    var pct=[10,15,20,25,30,40,50][Math.floor(Math.random()*7)];
+    q=pct+'% '+(LANG==='en'?'of':'din')+' '+base+' '+T.sym;
+    ans=Math.round(base*pct/100);
+  } else if(type===1){
+    var price=(Math.floor(Math.random()*9)+2)*100;
+    var d=[10,15,20,25,30,40,50][Math.floor(Math.random()*7)];
+    q=(LANG==='en'?'Final price after':'Preț final cu')+' -'+d+'% '+(LANG==='en'?'on':'pe')+' '+price+' '+T.sym;
+    ans=Math.round(price*(100-d)/100);
+  } else {
+    var goal=(Math.floor(Math.random()*9)+5)*1000;
+    var m=(Math.floor(Math.random()*10)+5);
+    q=(LANG==='en'?'Save':'Strânge')+' '+fmt(goal)+' '+(LANG==='en'?'in':'în')+' '+m+' '+(LANG==='en'?'months':'luni');
+    ans=Math.round(goal/m);
+  }
+  var opts=[ans];
+  while(opts.length<4){
+    var v=Math.round(ans*(0.4+Math.random()*1.6));
+    if(opts.indexOf(v)<0 && v>0 && Math.abs(v-ans)>5) opts.push(v);
+  }
+  opts.sort(function(a,b){ return a-b; });
+  var html='<div class="qz-prog">'+(st.idx+1)+' / '+st.total+'</div><div class="qz-q">'+escapeHTML(q)+'</div><div class="qz-opts">';
+  for(var i=0;i<opts.length;i++) html+='<button class="qz-opt" data-v="'+opts[i]+'">'+fmt(opts[i])+' '+T.sym+'</button>';
+  html+='</div>';
+  $('quiz-body').innerHTML=html;
+  var btns=$('quiz-body').querySelectorAll('.qz-opt');
+  for(var k=0;k<btns.length;k++){
+    btns[k].onclick=function(){
+      var pick=parseInt(this.getAttribute('data-v'),10);
+      var ok=pick===ans;
+      if(ok){ this.classList.add('ok'); GAME_STATE.score++; }
+      else { this.classList.add('bad');
+        for(var z=0;z<btns.length;z++) if(parseInt(btns[z].getAttribute('data-v'),10)===ans) btns[z].classList.add('ok');
+      }
+      for(var z2=0;z2<btns.length;z2++) btns[z2].disabled=true;
+      setTimeout(function(){ GAME_STATE.idx++; showCalcQ(); }, 700);
+    };
+  }
+}
+
+function finishGame(name,score,total){
+  var earned=Math.round((score/Math.max(1,total))*40);
+  if(earned<5 && score>0) earned=5;
+  S.xp = (S.xp||0) + earned;
+  var today=todayStr();
+  var d=new Date(today); d.setDate(d.getDate()-1);
+  var yest=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  if(S.lastPlayDate===today){}
+  else if(S.lastPlayDate===yest) S.streak=(S.streak||0)+1;
+  else S.streak=1;
+  S.lastPlayDate=today;
+  sv();
+  $('quiz-body').innerHTML='<div class="qz-fin">'+
+    '<div class="qz-fin-score">'+score+' / '+total+'</div>'+
+    '<div class="qz-fin-sub">'+(LANG==='en'?'XP earned':'XP câștigat')+'</div>'+
+    '<div class="qz-fin-xp">+'+earned+' XP</div>'+
+    '<button class="btn btn-acc btn-block" onclick="closeQuiz();">'+(LANG==='en'?'Done':'Gata')+'</button></div>';
+  updateAll();
+}
+
+function buildStreakXP(){
+  setText('streak-num', S.streak||0);
+  setText('xp-num', S.xp||0);
+}
+
+// ============================================================
+// UPDATE ALL
+// ============================================================
+function updateAll(){
+  buildHome();
+  buildGrafic();
+  buildAboList();
+  buildAboTotals();
+  buildStreakXP();
+  buildLeaderboard();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  var gn=$('grafic-obj-name'); if(gn) gn.oninput=onGoalNameChange;
+  var gp=$('goal-photo-input'); if(gp) gp.onchange=onGoalPhoto;
+
+  monthlyResetCheck();
+  applyLang();
+  bindSlider();
+  startCountdown();
+
+  if(!S.setupDone){
+    document.body.classList.add('onboarding');
+    var screens=document.querySelectorAll('.sc');
+    for(var i=0;i<screens.length;i++) screens[i].classList.remove('act');
+    $('sc-welcome').classList.add('act');
+    $('tabbar').style.display='none';
+  } else {
+    document.body.classList.remove('onboarding');
+    goTo('home');
+    updateAll();
+  }
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+</script>
+</body>
+</html>
